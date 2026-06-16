@@ -551,5 +551,5 @@ if api and auto_ai:
     with st.spinner("AI analyzing India Fear-Greed Index..."): ai_r=groq(p,api,700)
     st.markdown(f"<div class='ai-box'><div style='font-size:0.7rem;color:#3388ff;font-weight:800;margin-bottom:12px'>BEARIQ AI — FEAR-GREED INTERPRETATION</div><div style='color:#ccddee;font-size:0.92rem;line-height:1.85'>{ai_r.replace(chr(10),'<br>')}</div></div>",unsafe_allow_html=True)
 
-st.markdown("<div style='background:#0d1626;border:1px solid #1a2840;border-radius:8px;padding:10px 14px;color:#334455;font-size:0.72rem;margin-top:10px'>⚠ India's first F&O Fear-Greed Index by BearIQ
+st.markdown("<div style='background:#0d1626;border:1px solid #1a2840;border-radius:8px;padding:10px 14px;color:#334455;font-size:0.72rem;margin-top:10px'>⚠ India's first F&O Fear-Greed Index by BearIQ</div>",unsafe_allow_html=True)
 
