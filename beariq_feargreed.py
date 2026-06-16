@@ -1,12 +1,12 @@
 import streamlit as st
 import plotly.graph_objects as go
-import plotly.express as px
-import pandas as pd
 import yfinance as yf
+import pandas as pd
+import numpy as np
+import requests, os
 from datetime import datetime, timedelta
-import requests, os, json, time
 
-st.set_page_config(page_title="BearIQ — Market Breadth",page_icon="B",layout="wide",initial_sidebar_state="expanded")
+st.set_page_config(page_title="BearIQ — India Fear-Greed Index",page_icon="B",layout="wide",initial_sidebar_state="expanded")
 st.markdown("""<style>
 .stApp{background-color:#070b14;color:#e0e0e0}
 [data-testid="stSidebar"]{background-color:#0a0f1e;border-right:1px solid #1a2840}
@@ -20,59 +20,25 @@ st.markdown("""<style>
 GROQ_URL="https://api.groq.com/openai/v1/chat/completions"
 GROQ_MODEL="llama-3.3-70b-versatile"
 
-# ── COMPLETE STOCK UNIVERSES ─────────────────────────
-# NSE 500 broad universe for overall market breadth
-NSE500_UNIVERSE = [
-    # NIFTY 50
-    "RELIANCE","TCS","HDFCBANK","INFY","ICICIBANK","HINDUNILVR","SBIN","BHARTIARTL","ITC",
-    "KOTAKBANK","LT","AXISBANK","ASIANPAINT","MARUTI","SUNPHARMA","TITAN","BAJFINANCE",
-    "ULTRACEMCO","WIPRO","ONGC","NTPC","TATAMOTORS","ADANIENT","HCLTECH","POWERGRID",
-    "M&M","NESTLEIND","TATASTEEL","TECHM","COALINDIA","DRREDDY","DIVISLAB","BAJAJFINSV",
-    "CIPLA","BRITANNIA","BPCL","EICHERMOT","GRASIM","HINDALCO","INDUSINDBK","JSWSTEEL",
-    "APOLLOHOSP","ADANIPORTS","SBILIFE","TATACONSUM","LTIM","BAJAJ-AUTO","HEROMOTOCO",
-    "HDFCLIFE","SHRIRAMFIN",
-    # NIFTY NEXT 50
-    "VEDL","SIEMENS","DLF","GODREJCP","MARICO","DABUR","PIIND","INDHOTEL","NAUKRI",
-    "ICICIGI","HAVELLS","BERGEPAINT","MUTHOOTFIN","OFSS","LUPIN","TORNTPHARM","AUROPHARMA",
-    "BANDHANBNK","FEDERALBNK","BIOCON","MOTHERSON","BALKRISIND","COLPAL","PERSISTENT",
-    "MCDOWELL-N","TVSMOTOR","PAGEIND","ASTRAL","ABBOTINDIA","CHOLAFIN","SBICARD",
-    "TRENT","DMART","NYKAA","ZOMATO","PAYTM","POLICYBZR","IRCTC","LICI",
-    # MIDCAP SELECTIONS
-    "VOLTAS","MPHASIS","COFORGE","LTTS","KPITTECH","TATAELXSI","HCLTECH","DIXON",
-    "KAYNES","ZYDUSLIFE","ALKEM","IPCALAB","NATCOPHARM","JBCHEPHARM","GRANULES",
-    "AARTIIND","DEEPAKNTR","SRF","ATUL","FINPIPE","RATNAMANI","HSCL","GNFC",
-    "CANBK","BANKINDIA","UNIONBANK","INDIANB","MAHABANK","J&KBANK","KTKBANK",
-    "RECLTD","PFC","IRFC","HUDCO","NHPC","SJVN","CESC","TORNTPOWER","JSL",
-    "SAIL","NATIONALUM","HINDZINC","WELCORP","NMDC","MOIL","GMRINFRA","IRB",
-    "ASHOKLEY","ESCORTS","TIINDIA","SUNDRMFAST","APOLLOTYRE","MRF","CEATLTD",
-    "GODREJPROP","OBEROIRLTY","PRESTIGE","PHOENIXLTD","SOBHA","BRIGADE","MAHLIFE",
-    "INOXWIND","SUZLON","RPOWER","TATAPOWER","ADANIGREEN","ADANIPOWER","CESC",
-    "ZEEL","PVRINOX","INOXLEISURE","NAZARA","DELTACORP","WESTLIFE","DEVYANI",
-    "ABCAPITAL","MFSL","ICICIPRU","HDFCAMC","NIPPONLIFE","MIRAE","EDELWEISS",
+# ── BROAD UNIVERSE FOR BREADTH + HIGHS/LOWS ─────────────────────────────
+BROAD_100 = [
+    "RELIANCE","TCS","HDFCBANK","INFY","ICICIBANK","HINDUNILVR","SBIN",
+    "BHARTIARTL","ITC","KOTAKBANK","LT","AXISBANK","ASIANPAINT","MARUTI",
+    "SUNPHARMA","TITAN","BAJFINANCE","ULTRACEMCO","WIPRO","ONGC","NTPC",
+    "TATAMOTORS","ADANIENT","HCLTECH","POWERGRID","M&M","NESTLEIND",
+    "TATASTEEL","TECHM","COALINDIA","DRREDDY","DIVISLAB","BAJAJFINSV",
+    "CIPLA","BRITANNIA","BPCL","EICHERMOT","GRASIM","HINDALCO",
+    "INDUSINDBK","JSWSTEEL","APOLLOHOSP","ADANIPORTS","SBILIFE",
+    "TATACONSUM","LTIM","BAJAJ-AUTO","HEROMOTOCO","HDFCLIFE","SHRIRAMFIN",
+    "VEDL","SIEMENS","DLF","GODREJCP","MARICO","DABUR","NAUKRI",
+    "HAVELLS","MUTHOOTFIN","OFSS","LUPIN","TORNTPHARM","AUROPHARMA",
+    "BANDHANBNK","FEDERALBNK","BIOCON","BALKRISIND","COLPAL","PERSISTENT",
+    "TVSMOTOR","CHOLAFIN","TRENT","ZOMATO","IRCTC","MPHASIS","COFORGE",
+    "LTTS","KPITTECH","TATAELXSI","DIXON","KAYNES","ZYDUSLIFE","ALKEM",
+    "CANBK","BANKINDIA","UNIONBANK","PNB","IDFCFIRSTB","RECLTD","PFC",
+    "NHPC","SJVN","TATAPOWER","ADANIGREEN","ASHOKLEY","APOLLOTYRE",
+    "GODREJPROP","OBEROIRLTY","PRESTIGE","PHOENIXLTD","BANKBARODA",
 ]
-
-SECTOR_UNIVERSE = {
-    "IT": ["TCS","INFY","WIPRO","HCLTECH","TECHM","LTIM","MPHASIS","COFORGE","PERSISTENT",
-           "DIXON","KAYNES","TATAELXSI","LTTS","KPITTECH","ZENSARTECH","NIITTECH",
-           "MASTEK","SONATSOFTW","TANLA","INTELLECT","NEWGEN","RATEGAIN","HAPPSTMNDS"],
-    "BANK": ["HDFCBANK","ICICIBANK","AXISBANK","KOTAKBANK","SBIN","INDUSINDBK","FEDERALBNK",
-             "BANDHANBNK","BANKBARODA","CANBK","BANKINDIA","UNIONBANK","INDIANB","MAHABANK",
-             "J&KBANK","KTKBANK","DCBBANK","RBLBANK","YESBANK","IDFCFIRSTB","PNB","AUBANK"],
-    "AUTO": ["MARUTI","TATAMOTORS","M&M","BAJAJ-AUTO","HEROMOTOCO","EICHERMOT","TVSMOTOR",
-             "ASHOKLEY","BALKRISIND","APOLLOTYRE","MRF","CEATLTD","ESCORTS","TIINDIA",
-             "SUNDRMFAST","MOTHERSON","BOSCHLTD","ENDURANCE","SUPRAJIT","GABRIEL"],
-    "PHARMA": ["SUNPHARMA","DRREDDY","CIPLA","DIVISLAB","AUROPHARMA","LUPIN","TORNTPHARM",
-               "ALKEM","IPCALAB","BIOCON","ZYDUSLIFE","NATCOPHARM","JBCHEPHARM","GRANULES",
-               "GLENMARK","LAURUSLABS","AJANTPHARM","ABBOTINDIA","PFIZER","SANOFI"],
-    "METAL": ["TATASTEEL","JSWSTEEL","HINDALCO","VEDL","SAIL","NATIONALUM","COALINDIA",
-              "NMDC","HINDCOPPER","MOIL","WELCORP","RATNAMANI","APL","JINDALSAW"],
-    "FMCG": ["HINDUNILVR","ITC","NESTLEIND","BRITANNIA","DABUR","MARICO","GODREJCP","COLPAL",
-             "TATACONSUM","EMAMILTD","JYOTHYLAB","BIKAJI","PATANJALI","VBL","CCL"],
-    "REALTY": ["DLF","GODREJPROP","OBEROIRLTY","PRESTIGE","PHOENIXLTD","SOBHA","BRIGADE",
-               "MAHLIFE","SUNTECK","KOLTEPATIL","PURVA","ANANTRAJ","INDIABULLS","ELDECO"],
-    "ENERGY": ["RELIANCE","ONGC","BPCL","IOC","GAIL","NTPC","POWERGRID","TATAPOWER",
-               "ADANIGREEN","ADANIPOWER","CESC","TORNTPOWER","NHPC","SJVN","RECLTD"],
-}
 
 def load_key():
     for p in [os.path.join(os.path.expanduser("~"),"Desktop","BearIQ","config.txt"),
@@ -95,392 +61,495 @@ def card(lbl,val,clr,sub="",icon=""):
         +"<div style='font-size:1.9rem;font-weight:900;color:"+clr+";margin:4px 0'>"+str(val)+"</div>"
         +(("<div style='font-size:0.75rem;color:#445566;margin-top:4px'>"+sub+"</div>") if sub else "")+"</div>")
 
-@st.cache_data(ttl=60)
-def calc_breadth(stocks, label="Market"):
-    """
-    Professional breadth calculation on complete universe
-    Returns comprehensive breadth data
-    """
-    adv=0; dec=0; unch=0
-    details=[]
-    total_attempted=len(stocks)
-    # Batch download for speed
-    try:
-        tickers=[s+".NS" for s in stocks]
-        batch=yf.download(tickers,period="3d",interval="1d",group_by="ticker",progress=False,threads=True)
-        for sym in stocks:
-            try:
-                ticker=sym+".NS"
-                if len(tickers)==1:
-                    df=batch
-                else:
-                    df=batch[ticker] if ticker in batch.columns.get_level_values(0) else None
-                if df is None or df.empty: continue
-                close=df["Close"].dropna()
-                if len(close)<2: continue
-                curr=close.iloc[-1]; prev=close.iloc[-2]
-                pct=round(((curr-prev)/prev)*100,2) if prev and prev>0 else 0
-                if pct>0.25: adv+=1; status="ADV"
-                elif pct<-0.25: dec+=1; status="DEC"
-                else: unch+=1; status="UNC"
-                details.append({"sym":sym,"pct":pct,"status":status,"price":round(curr,2)})
-            except: pass
-    except Exception as e:
-        # Fallback: individual fetch if batch fails
-        for sym in stocks:
-            try:
-                t=yf.Ticker(sym+".NS")
-                h=t.history(period="3d",interval="1d")
-                if len(h)>=2:
-                    curr=h["Close"].iloc[-1]; prev=h["Close"].iloc[-2]
-                    pct=round(((curr-prev)/prev)*100,2) if prev and prev>0 else 0
-                    if pct>0.25: adv+=1; status="ADV"
-                    elif pct<-0.25: dec+=1; status="DEC"
-                    else: unch+=1; status="UNC"
-                    details.append({"sym":sym,"pct":pct,"status":status,"price":round(curr,2)})
-            except: pass
-    total=adv+dec+unch
-    ad_ratio=round(adv/dec,2) if dec>0 else 5.0
-    ad_pct=round((adv/total)*100,1) if total>0 else 50
-    dec_pct=round((dec/total)*100,1) if total>0 else 50
-    # Breadth score 0-100 (0=worst, 100=best for bulls, 50=neutral)
-    breadth_score=round(ad_pct)
-    # Signal
-    if ad_ratio<0.3: signal="EXTREME WEAKNESS"; sig_clr="#ff0000"; bear_signal=True
-    elif ad_ratio<0.6: signal="STRONG WEAKNESS"; sig_clr="#ff4444"; bear_signal=True
-    elif ad_ratio<0.8: signal="MILD WEAKNESS"; sig_clr="#ff8800"; bear_signal=True
-    elif ad_ratio<1.2: signal="NEUTRAL"; sig_clr="#ffdd00"; bear_signal=False
-    elif ad_ratio<1.8: signal="MILD STRENGTH"; sig_clr="#44ff88"; bear_signal=False
-    else: signal="STRONG BREADTH"; sig_clr="#00ff44"; bear_signal=False
-    # Sort details by pct
-    details.sort(key=lambda x:x["pct"])
-    top_decliners=details[:5]
-    top_advancers=sorted(details,key=lambda x:x["pct"],reverse=True)[:5]
-    return {
-        "advances":adv,"declines":dec,"unchanged":unch,
-        "total":total,"total_attempted":total_attempted,
-        "ad_ratio":ad_ratio,"ad_pct":ad_pct,"dec_pct":dec_pct,
-        "breadth_score":breadth_score,
-        "signal":signal,"sig_clr":sig_clr,"bear_signal":bear_signal,
-        "top_decliners":top_decliners,"top_advancers":top_advancers,
-        "details":details,"label":label,
-        "fetched_at":datetime.now().strftime("%I:%M:%S %p")
-    }
+def score_to_100(val, low, high, invert=False):
+    """Normalize any value to 0-100 scale"""
+    if high==low: return 50
+    score=((val-low)/(high-low))*100
+    score=max(0,min(100,score))
+    return round(100-score if invert else score, 1)
 
-@st.cache_data(ttl=3600)
-def calc_breadth_trend(stocks, days=5):
-    """Track breadth over last N days to show trend"""
-    trend_data=[]
-    try:
-        tickers=[s+".NS" for s in stocks[:50]]  # limit for trend
-        batch=yf.download(tickers,period="10d",interval="1d",group_by="ticker",progress=False,threads=True)
-        # Get date index
-        if hasattr(batch.index,"date"):
-            dates=sorted(set(batch.index.date))[-days:]
-        else:
-            dates=[]
-        for i in range(1,min(days+1,len(dates))):
-            d=dates[i]; pd_=dates[i-1]
-            adv=0; dec=0
-            for sym in stocks[:50]:
-                try:
-                    ticker=sym+".NS"
-                    df=batch[ticker] if ticker in batch.columns.get_level_values(0) else None
-                    if df is None: continue
-                    curr_row=df[df.index.date==d]["Close"]
-                    prev_row=df[df.index.date==pd_]["Close"]
-                    if curr_row.empty or prev_row.empty: continue
-                    curr=curr_row.iloc[0]; prev=prev_row.iloc[0]
-                    pct=((curr-prev)/prev)*100 if prev and prev>0 else 0
-                    if pct>0.25: adv+=1
-                    elif pct<-0.25: dec+=1
-                except: pass
-            total=adv+dec
-            if total>0:
-                trend_data.append({"date":str(d),"advances":adv,"declines":dec,
-                    "ad_ratio":round(adv/dec,2) if dec>0 else 5.0,
-                    "ad_pct":round((adv/total)*100,1)})
-    except Exception as e: pass
-    return trend_data
-
-def detect_divergence(breadth_data, index_pct):
-    """
-    Detect breadth divergences — most powerful signal
-    """
-    ad_ratio=breadth_data["ad_ratio"]
-    divs=[]
-    # Classic divergence: Index up but breadth weak
-    if index_pct>0.3 and ad_ratio<0.8:
-        divs.append({"type":"BEARISH DIVERGENCE","severity":"HIGH","clr":"#ff2222",
-            "msg":"Index rising but "+str(breadth_data["declines"])+" stocks falling vs "+str(breadth_data["advances"])+" rising. Smart money exiting — STRONG PUT SIGNAL."})
-    # Index flat but breadth collapsing
-    elif abs(index_pct)<0.3 and ad_ratio<0.6:
-        divs.append({"type":"HIDDEN WEAKNESS","severity":"HIGH","clr":"#ff4444",
-            "msg":"Index appears stable but breadth collapsing. Institutional distribution happening. Puts recommended."})
-    # Both index and breadth falling — confirmed bear
-    elif index_pct<-0.5 and ad_ratio<0.6:
-        divs.append({"type":"CONFIRMED BEAR","severity":"EXTREME","clr":"#ff0000",
-            "msg":"Index AND breadth both collapsing. Broad market selling. Maximum bearish signal."})
-    # Index down but breadth strong — likely bounce
-    elif index_pct<-0.5 and ad_ratio>1.2:
-        divs.append({"type":"BULLISH DIVERGENCE","severity":"CAUTION","clr":"#00ff88",
-            "msg":"Index falling but majority stocks rising. Likely index-heavy stock drag. Avoid puts — may bounce."})
-    # Healthy market
-    elif ad_ratio>1.5 and index_pct>0:
-        divs.append({"type":"HEALTHY MARKET","severity":"LOW","clr":"#00ff88",
-            "msg":"Broad participation in rally. Avoid bearish trades — risk is high for puts."})
-    else:
-        divs.append({"type":"NO DIVERGENCE","severity":"NEUTRAL","clr":"#ffdd00",
-            "msg":"Index and breadth moving together. No special signal. Watch for divergence."})
-    return divs
-
-def breadth_trade_signal(breadth_data, index_pct, vix_pct=0):
-    """Generate clear trading signal from breadth data"""
-    ad_ratio=breadth_data["ad_ratio"]
-    adv=breadth_data["advances"]
-    dec=breadth_data["declines"]
-    total=breadth_data["total"]
-    # Signal logic
-    if ad_ratio<0.3 and index_pct<-0.5:
-        return {"action":"STRONG PUT BUY","clr":"#ff0000","bg":"#1a0000",
-            "confidence":88,"reason":"Breadth collapsed ("+str(dec)+" stocks falling vs "+str(adv)+"). Broad selling confirmed."}
-    elif ad_ratio<0.6 and (index_pct<0 or vix_pct>3):
-        return {"action":"BUY PUTS","clr":"#ff4444","bg":"#140000",
-            "confidence":74,"reason":"Weak breadth (A/D: "+str(ad_ratio)+") with "+str(dec)+" decliners. Good put entry."}
-    elif ad_ratio<0.8 and index_pct>0.3:
-        return {"action":"BUY PUTS (Divergence)","clr":"#ff6600","bg":"#1a0800",
-            "confidence":70,"reason":"Index up but breadth weak — classic distribution. Smart money exiting."}
-    elif ad_ratio<1.0:
-        return {"action":"WATCH — MILD WEAKNESS","clr":"#ff8800","bg":"#1a0a00",
-            "confidence":50,"reason":"Slightly more decliners than advancers. Monitor for deterioration."}
-    elif ad_ratio>1.5:
-        return {"action":"AVOID PUTS","clr":"#00ff88","bg":"#001a08",
-            "confidence":0,"reason":"Strong breadth ("+str(adv)+" advancing vs "+str(dec)+" declining). Puts are risky."}
-    else:
-        return {"action":"STAND ASIDE","clr":"#ffdd00","bg":"#141000",
-            "confidence":30,"reason":"Neutral breadth. Wait for clearer direction."}
+# ── COMPONENT FETCHERS ───────────────────────────────────────────────────
 
 @st.cache_data(ttl=60)
-def get_nifty():
+def comp1_nifty_momentum():
+    """Component 1: Nifty vs 125-day MA"""
     try:
         t=yf.Ticker("^NSEI")
-        h=t.history(period="3d",interval="1d")
-        h5=t.history(period="1d",interval="5m")
-        if h.empty: return 24000,0
-        curr=h5["Close"].iloc[-1] if not h5.empty else h["Close"].iloc[-1]
-        prev=h["Close"].iloc[-2] if len(h)>1 else h["Close"].iloc[-1]
-        return round(curr,2),round(((curr-prev)/prev)*100,2)
-    except: return 24000,0
+        # Use 2y to ensure enough data for 125-day MA
+        h=t.history(period="2y",interval="1d")
+        if h.empty: return 50,"N/A",0
+        c=h["Close"].dropna()
+        if len(c)<130: return 50,"N/A",0
+        curr=float(c.iloc[-1])
+        ma125=float(c.rolling(125).mean().iloc[-1])
+        if ma125==0 or pd.isna(ma125): return 50,round(curr,0),0
+        pct_diff=round(((curr-ma125)/ma125)*100,2)
+        # Range: -5% below MA = extreme fear (0), +5% above = extreme greed (100)
+        score=score_to_100(pct_diff,-10,10)
+        return score,round(curr,0),pct_diff
+    except Exception as e:
+        return 50,"N/A",0
+
+@st.cache_data(ttl=300)
+def comp2_highs_lows():
+    """Component 2: 52-week Highs vs Lows ratio"""
+    try:
+        tickers=[s+".NS" for s in BROAD_100[:60]]
+        batch=yf.download(tickers,period="260d",interval="1d",group_by="ticker",progress=False,threads=True)
+        highs=0; lows=0; total=0
+        for sym in BROAD_100[:60]:
+            try:
+                ticker=sym+".NS"
+                df=batch[ticker] if ticker in batch.columns.get_level_values(0) else None
+                if df is None or df.empty: continue
+                c=df["Close"].dropna()
+                if len(c)<20: continue
+                curr=c.iloc[-1]
+                h52=c.max(); l52=c.min()
+                # within 2% of 52W high = new high
+                if curr>=(h52*0.98): highs+=1
+                # within 2% of 52W low = new low
+                if curr<=(l52*1.02): lows+=1
+                total+=1
+            except: pass
+        if total==0: return 50,0,0,0
+        # More highs = greed, more lows = fear
+        net=highs-lows
+        # Net range roughly -60 to +60
+        score=score_to_100(net,-30,30)
+        return score,highs,lows,total
+    except: return 50,0,0,0
 
 @st.cache_data(ttl=60)
-def get_vix():
+def comp3_breadth():
+    """Component 3: Advance-Decline Ratio"""
+    try:
+        tickers=[s+".NS" for s in BROAD_100]
+        batch=yf.download(tickers,period="3d",interval="1d",group_by="ticker",progress=False,threads=True)
+        adv=0; dec=0
+        for sym in BROAD_100:
+            try:
+                ticker=sym+".NS"
+                df=batch[ticker] if ticker in batch.columns.get_level_values(0) else None
+                if df is None or df.empty: continue
+                c=df["Close"].dropna()
+                if len(c)<2: continue
+                pct=((c.iloc[-1]-c.iloc[-2])/c.iloc[-2])*100
+                if pct>0.25: adv+=1
+                elif pct<-0.25: dec+=1
+            except: pass
+        total=adv+dec
+        if total==0: return 50,0,0
+        ad_ratio=adv/dec if dec>0 else 5.0
+        # A/D ratio 0.2=extreme fear, 3.0=extreme greed
+        score=score_to_100(ad_ratio,0.2,3.0)
+        return score,adv,dec
+    except: return 50,0,0
+
+@st.cache_data(ttl=300)
+def comp4_vix():
+    """Component 4: VIX Level vs 20-day average + Trend"""
     try:
         t=yf.Ticker("^INDIAVIX")
-        h=t.history(period="3d",interval="1d")
+        h=t.history(period="60d",interval="1d")
         h5=t.history(period="1d",interval="5m")
-        if h.empty: return 15,0
+        if h.empty: return 50,15,15,0
         curr=h5["Close"].iloc[-1] if not h5.empty else h["Close"].iloc[-1]
-        prev=h["Close"].iloc[-2] if len(h)>1 else h["Close"].iloc[-1]
-        return round(curr,2),round(((curr-prev)/prev)*100,2)
-    except: return 15,0
+        ma20=h["Close"].rolling(20).mean().iloc[-1]
+        pct_above=((curr-ma20)/ma20)*100
+        # VIX 30% above 20MA = extreme fear, 30% below = extreme greed
+        score=score_to_100(pct_above,-30,30,invert=True)
+        return score,round(curr,2),round(ma20,2),round(pct_above,1)
+    except: return 50,15,15,0
 
+@st.cache_data(ttl=300)
+def comp5_safe_haven():
+    """Component 5: Gold vs Nifty 20-day performance"""
+    try:
+        gold=yf.Ticker("GC=F").history(period="30d",interval="1d")
+        nifty=yf.Ticker("^NSEI").history(period="30d",interval="1d")
+        if gold.empty or nifty.empty or len(gold)<20 or len(nifty)<20:
+            return 50,0,0,0
+        gold_ret=((gold["Close"].iloc[-1]-gold["Close"].iloc[-20])/gold["Close"].iloc[-20])*100
+        nifty_ret=((nifty["Close"].iloc[-1]-nifty["Close"].iloc[-20])/nifty["Close"].iloc[-20])*100
+        # Gold outperforming = fear
+        # When gold_ret - nifty_ret is very positive = fear
+        # When very negative = greed
+        diff=gold_ret-nifty_ret
+        # Range -10 to +10
+        score=score_to_100(diff,-8,8,invert=True)
+        return score,round(gold_ret,2),round(nifty_ret,2),round(diff,2)
+    except: return 50,0,0,0
+
+@st.cache_data(ttl=300)
+def comp6_rupee():
+    """Component 6: Rupee Strength (India-specific innovation!)"""
+    try:
+        t=yf.Ticker("USDINR=X")
+        h=t.history(period="60d",interval="1d")
+        h5=t.history(period="1d",interval="5m")
+        if h.empty: return 50,84,84,0
+        curr=h5["Close"].iloc[-1] if not h5.empty else h["Close"].iloc[-1]
+        ma20=h["Close"].rolling(20).mean().iloc[-1]
+        pct_above=((curr-ma20)/ma20)*100
+        # USD/INR 2% above 20MA = rupee very weak = extreme fear
+        # USD/INR 2% below 20MA = rupee strong = extreme greed
+        score=score_to_100(pct_above,-2,2,invert=True)
+        return score,round(curr,2),round(ma20,2),round(pct_above,2)
+    except: return 50,84,84,0
+
+@st.cache_data(ttl=300)
+def comp7_crude_fear():
+    """Component 7: Crude Oil Fear Factor"""
+    try:
+        crude=yf.Ticker("CL=F").history(period="30d",interval="1d")
+        nifty=yf.Ticker("^NSEI").history(period="30d",interval="1d")
+        if crude.empty or nifty.empty: return 50,0,0
+        crude_pct=((crude["Close"].iloc[-1]-crude["Close"].iloc[-5])/crude["Close"].iloc[-5])*100
+        nifty_pct=((nifty["Close"].iloc[-1]-nifty["Close"].iloc[-5])/nifty["Close"].iloc[-5])*100
+        crude_price=round(crude["Close"].iloc[-1],2)
+        # Rising crude + falling nifty = stagflation fear = extreme fear
+        # Rising crude alone = mild fear
+        # Falling crude + rising nifty = greed
+        combo=crude_pct-nifty_pct
+        score=score_to_100(combo,-8,8,invert=True)
+        return score,crude_price,round(crude_pct,2)
+    except: return 50,0,0
+
+# ── HISTORICAL TREND ─────────────────────────────────────────────────────
+@st.cache_data(ttl=3600)
+def get_fg_trend():
+    """Approximate 5-day historical trend using Nifty + VIX proxy"""
+    try:
+        nifty=yf.Ticker("^NSEI").history(period="15d",interval="1d")
+        vix=yf.Ticker("^INDIAVIX").history(period="15d",interval="1d")
+        gold=yf.Ticker("GC=F").history(period="15d",interval="1d")
+        usd=yf.Ticker("USDINR=X").history(period="15d",interval="1d")
+        if any(x.empty for x in [nifty,vix,gold,usd]): return []
+        # Get common dates
+        dates=nifty.index[-7:]
+        trend=[]
+        for i,dt in enumerate(dates):
+            if i<1: continue
+            try:
+                # Simplified proxy score for historical
+                n_idx=list(nifty.index).index(dt)
+                v_idx=list(vix.index).index(dt) if dt in vix.index else -1
+                nifty_pct=((nifty["Close"].iloc[n_idx]-nifty["Close"].iloc[n_idx-1])/nifty["Close"].iloc[n_idx-1])*100
+                vix_val=vix["Close"].iloc[v_idx] if v_idx>=0 else 15
+                # Simple proxy
+                proxy_score=50+(nifty_pct*5)-(max(0,vix_val-15)*2)
+                proxy_score=max(0,min(100,proxy_score))
+                trend.append({"date":dt.strftime("%d %b"),"score":round(proxy_score,1)})
+            except: pass
+        return trend[-5:] if len(trend)>=2 else []
+    except: return []
+
+# ── SCORE TO LABEL ────────────────────────────────────────────────────────
+def score_label(score):
+    if score<=20:   return "EXTREME FEAR","#ff0000","#1a0000"
+    elif score<=35: return "FEAR","#ff4444","#140000"
+    elif score<=50: return "MILD FEAR","#ff8800","#140800"
+    elif score<=60: return "NEUTRAL","#ffdd00","#141000"
+    elif score<=75: return "MILD GREED","#88ff00","#0a1400"
+    elif score<=90: return "GREED","#00ff44","#001a08"
+    else:           return "EXTREME GREED","#00ff88","#001a10"
+
+def put_signal(score):
+    if score<=20:   return "CAUTION — Book profits on puts. Bounce likely near!","#ffdd00"
+    elif score<=35: return "HOLD puts. Market fearful but may continue.","#ff8800"
+    elif score<=50: return "WATCH — Mild fear. Follow Bear Score for confirmation.","#ff8800"
+    elif score<=60: return "STAND ASIDE — Neutral market. Wait for fear.","#ffdd00"
+    elif score<=75: return "PREPARE — Greed building. Start watching for put entry.","#ff4444"
+    elif score<=90: return "BUY PUTS — Market greedy. Smart money exiting quietly.","#ff2222"
+    else:           return "STRONG PUT SIGNAL — Extreme greed = crash risk HIGH!","#ff0000"
+
+# ── SIDEBAR ────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("<div style='text-align:center;padding:14px 0 8px'><div style='font-size:2rem;font-weight:900;color:#ff4444;letter-spacing:4px'>BearIQ</div><div style='font-size:0.6rem;color:#334455;letter-spacing:2px'>MARKET BREADTH INTELLIGENCE</div></div>",unsafe_allow_html=True)
+    st.markdown("<div style='text-align:center;padding:14px 0 8px'><div style='font-size:2rem;font-weight:900;color:#ff4444;letter-spacing:4px'>BearIQ</div><div style='font-size:0.6rem;color:#334455;letter-spacing:2px'>INDIA FEAR-GREED INDEX</div></div>",unsafe_allow_html=True)
     st.markdown("---")
-    view=st.radio("Select View",[
-        "Overall Market (NSE Broad)",
-        "IT Sector",
-        "Banking Sector",
-        "Auto Sector",
-        "Pharma Sector",
-        "Metal Sector",
-        "FMCG Sector",
-        "Realty Sector",
-        "Energy Sector",
-    ],label_visibility="collapsed")
-    st.markdown("---")
-    show_trend=st.checkbox("Show 5-Day Breadth Trend",value=True)
-    show_stocks=st.checkbox("Show Top Movers",value=True)
     auto_ai=st.toggle("AI Interpretation",value=True)
-    if st.button("REFRESH BREADTH"): st.cache_data.clear(); st.rerun()
+    show_detail=st.toggle("Show Component Details",value=True)
+    if st.button("REFRESH NOW"): st.cache_data.clear(); st.rerun()
+    st.markdown("---")
+    st.markdown("""<div style='background:#0d1626;border:1px solid #1a2840;border-radius:10px;padding:14px;font-size:0.75rem;color:#445566'>
+    <div style='color:#3388cc;font-weight:800;margin-bottom:8px'>7 COMPONENTS</div>
+    1. Nifty Momentum<br>
+    2. 52W Highs vs Lows<br>
+    3. Advance-Decline<br>
+    4. India VIX<br>
+    5. Gold vs Nifty<br>
+    6. Rupee Strength ⭐<br>
+    7. Crude Oil Fear ⭐<br>
+    <div style='margin-top:8px;color:#223344'>⭐ India-specific innovation</div>
+    </div>""",unsafe_allow_html=True)
     st.markdown("---")
     ts=datetime.now().strftime("%d %b %Y  %I:%M %p")
-    st.markdown("<div style='font-size:0.65rem;color:#334455;text-align:center'>"+ts+"<br>Breadth updates every 60s</div>",unsafe_allow_html=True)
+    st.markdown(f"<div style='font-size:0.65rem;color:#334455;text-align:center'>{ts}<br>All data via yFinance (Free)<br>India's first F&O Fear-Greed</div>",unsafe_allow_html=True)
 
 api=load_key()
 now_str=datetime.now().strftime("%d %b %Y  %I:%M %p")
-nifty_p,nifty_pct=get_nifty()
-vix_p,vix_pct=get_vix()
 
-if "Overall" in view:
-    universe=NSE500_UNIVERSE; u_label="NSE Broad Market"; u_count=len(NSE500_UNIVERSE)
-    sec_key=None
+st.markdown(f"<div style='font-size:1.6rem;font-weight:800;color:#e0e0e0;border-bottom:1px solid #1a2840;padding-bottom:12px;margin-bottom:20px'>INDIA F&O FEAR-GREED INDEX <span style='font-size:0.82rem;color:#445566'>{now_str}</span></div>",unsafe_allow_html=True)
+
+# ── FETCH ALL 7 COMPONENTS ────────────────────────────────────────────────
+prog=st.progress(0)
+status=st.empty()
+
+status.markdown("<div style='color:#334455;font-size:0.8rem'>Fetching Nifty momentum...</div>",unsafe_allow_html=True)
+s1,nifty_curr,nifty_ma_diff=comp1_nifty_momentum()
+prog.progress(14)
+
+status.markdown("<div style='color:#334455;font-size:0.8rem'>Fetching 52-week highs vs lows (60 stocks)...</div>",unsafe_allow_html=True)
+s2,highs,lows,total_scanned=comp2_highs_lows()
+prog.progress(28)
+
+status.markdown("<div style='color:#334455;font-size:0.8rem'>Fetching advance-decline breadth (100+ stocks)...</div>",unsafe_allow_html=True)
+s3,adv,dec=comp3_breadth()
+prog.progress(42)
+
+status.markdown("<div style='color:#334455;font-size:0.8rem'>Fetching India VIX...</div>",unsafe_allow_html=True)
+s4,vix_curr,vix_ma,vix_pct_above=comp4_vix()
+prog.progress(56)
+
+status.markdown("<div style='color:#334455;font-size:0.8rem'>Fetching Gold vs Nifty...</div>",unsafe_allow_html=True)
+s5,gold_ret,nifty_ret_20d,gold_nifty_diff=comp5_safe_haven()
+prog.progress(70)
+
+status.markdown("<div style='color:#334455;font-size:0.8rem'>Fetching Rupee strength...</div>",unsafe_allow_html=True)
+s6,usdinr,usdinr_ma,usdinr_pct=comp6_rupee()
+prog.progress(84)
+
+status.markdown("<div style='color:#334455;font-size:0.8rem'>Fetching Crude Oil fear factor...</div>",unsafe_allow_html=True)
+s7,crude_price,crude_pct=comp7_crude_fear()
+prog.progress(100)
+
+prog.empty(); status.empty()
+
+# ── FINAL SCORE ────────────────────────────────────────────────────────────
+final_score=round((s1+s2+s3+s4+s5+s6+s7)/7,1)
+label,fg_color,fg_bg=score_label(final_score)
+put_msg,put_clr=put_signal(final_score)
+
+# ── MAIN GAUGE ────────────────────────────────────────────────────────────
+g1,g2=st.columns([1,1])
+with g1:
+    # Semicircle gauge
+    gauge_fig=go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=final_score,
+        domain={"x":[0,1],"y":[0,1]},
+        gauge={
+            "axis":{"range":[0,100],"tickcolor":"#445566","tickfont":{"color":"#445566"}},
+            "bar":{"color":fg_color,"thickness":0.28},
+            "bgcolor":"#0d1626",
+            "bordercolor":"#1a2840",
+            "steps":[
+                {"range":[0,20],"color":"#1a0000"},
+                {"range":[20,35],"color":"#140000"},
+                {"range":[35,50],"color":"#141000"},
+                {"range":[50,65],"color":"#141400"},
+                {"range":[65,80],"color":"#0a1400"},
+                {"range":[80,100],"color":"#001a08"},
+            ],
+            "threshold":{"line":{"color":fg_color,"width":5},"thickness":0.8,"value":final_score}
+        },
+        number={"font":{"color":fg_color,"size":64},"suffix":""}
+    ))
+    gauge_fig.update_layout(
+        paper_bgcolor="#070b14",height=320,
+        margin=dict(l=20,r=20,t=30,b=10),
+        annotations=[
+            {"text":"0<br>EXTREME<br>FEAR","x":0.02,"y":0.1,"showarrow":False,"font":{"color":"#ff2222","size":9},"align":"center"},
+            {"text":"50<br>NEUTRAL","x":0.5,"y":-0.05,"showarrow":False,"font":{"color":"#ffdd00","size":9},"align":"center"},
+            {"text":"100<br>EXTREME<br>GREED","x":0.98,"y":0.1,"showarrow":False,"font":{"color":"#00ff88","size":9},"align":"center"},
+        ]
+    )
+    st.plotly_chart(gauge_fig,use_container_width=True,config={"displayModeBar":False},key="fg_gauge")
+
+with g2:
+    st.markdown(f"""
+    <div style='padding:20px'>
+        <div style='font-size:0.72rem;color:#445566;letter-spacing:3px;margin-bottom:8px'>INDIA F&O FEAR-GREED</div>
+        <div style='font-size:3rem;font-weight:900;color:{fg_color};margin-bottom:4px'>{label}</div>
+        <div style='font-size:4rem;font-weight:900;color:{fg_color};margin-bottom:16px'>{final_score}/100</div>
+        <div style='background:{fg_bg};border:2px solid {fg_color}44;border-left:5px solid {fg_color};border-radius:10px;padding:14px;margin-bottom:16px'>
+            <div style='font-size:0.7rem;color:{fg_color};font-weight:800;letter-spacing:2px;margin-bottom:6px'>PUT TRADING SIGNAL</div>
+            <div style='color:#ccddee;font-size:0.92rem;line-height:1.5'>{put_msg}</div>
+        </div>
+        <div style='display:grid;grid-template-columns:repeat(2,1fr);gap:8px'>
+            <div style='background:#0d1626;border-radius:8px;padding:10px;text-align:center'>
+                <div style='color:#445566;font-size:0.65rem'>COMPONENTS</div>
+                <div style='color:#4488ff;font-weight:800;font-size:1.1rem'>7 Active</div>
+            </div>
+            <div style='background:#0d1626;border-radius:8px;padding:10px;text-align:center'>
+                <div style='color:#445566;font-size:0.65rem'>STOCKS SCANNED</div>
+                <div style='color:#4488ff;font-weight:800;font-size:1.1rem'>{total_scanned}+</div>
+            </div>
+        </div>
+    </div>""",unsafe_allow_html=True)
+
+# ── 7 COMPONENT CARDS ─────────────────────────────────────────────────────
+st.markdown("<div class='section-title'>7 COMPONENTS — INDIA FEAR-GREED BREAKDOWN</div>",unsafe_allow_html=True)
+
+components=[
+    {"name":"NIFTY MOMENTUM","score":s1,"icon":"📈",
+     "detail":f"Nifty {('above' if nifty_ma_diff>=0 else 'below')} 125-day MA by {abs(nifty_ma_diff)}%",
+     "what":"Nifty vs 125-day moving average"},
+    {"name":"52W HIGHS vs LOWS","score":s2,"icon":"📊",
+     "detail":f"{highs} stocks near 52W high vs {lows} near 52W low (of {total_scanned} scanned)",
+     "what":"New highs vs new lows ratio"},
+    {"name":"ADVANCE-DECLINE","score":s3,"icon":"⬆️",
+     "detail":f"{adv} advancing vs {dec} declining today (A/D: {round(adv/dec,2) if dec>0 else '5.0+'})",
+     "what":"Market breadth — 100+ stocks"},
+    {"name":"INDIA VIX","score":s4,"icon":"😱",
+     "detail":f"VIX {vix_curr} vs 20-day avg {vix_ma} ({('+' if vix_pct_above>=0 else '')}{vix_pct_above}%)",
+     "what":"Fear gauge vs its own average"},
+    {"name":"GOLD vs NIFTY","score":s5,"icon":"🥇",
+     "detail":f"Gold 20D: {('+' if gold_ret>=0 else '')}{gold_ret}% vs Nifty 20D: {('+' if nifty_ret_20d>=0 else '')}{nifty_ret_20d}%",
+     "what":"Safe haven demand indicator"},
+    {"name":"RUPEE STRENGTH ⭐","score":s6,"icon":"💵",
+     "detail":f"USD/INR {usdinr} vs 20-day avg {usdinr_ma} ({('+' if usdinr_pct>=0 else '')}{usdinr_pct}%)",
+     "what":"India-specific innovation — rupee as fear gauge"},
+    {"name":"CRUDE OIL FEAR ⭐","score":s7,"icon":"🛢️",
+     "detail":f"Crude ${crude_price} | 5-day change: {('+' if crude_pct>=0 else '')}{crude_pct}%",
+     "what":"India-specific — stagflation fear detector"},
+]
+
+cols=st.columns(4)
+for i,comp in enumerate(components[:4]):
+    with cols[i]:
+        sc=comp["score"]
+        if sc<=35:      clr="#ff4444"; bg="#1a0000"
+        elif sc<=50:    clr="#ff8800"; bg="#140800"
+        elif sc<=65:    clr="#ffdd00"; bg="#141000"
+        else:           clr="#00ff88"; bg="#001a08"
+        bar_width=round(sc)
+        h=f"<div style='background:{bg};border:1px solid {clr}33;border-left:4px solid {clr};border-radius:12px;padding:14px;height:100%'>"
+        h+=f"<div style='font-size:1.2rem;margin-bottom:6px'>{comp['icon']}</div>"
+        h+=f"<div style='color:#aabbcc;font-size:0.72rem;font-weight:700;margin-bottom:8px'>{comp['name']}</div>"
+        h+=f"<div style='font-size:2rem;font-weight:900;color:{clr};margin-bottom:6px'>{sc}</div>"
+        h+=f"<div style='background:#0a0e1a;border-radius:3px;height:5px;margin-bottom:8px'><div style='background:{clr};width:{bar_width}%;height:5px;border-radius:3px'></div></div>"
+        if show_detail:
+            h+=f"<div style='color:#445566;font-size:0.7rem;line-height:1.5'>{comp['detail']}</div>"
+        h+="</div>"
+        st.markdown(h,unsafe_allow_html=True)
+
+cols2=st.columns(3)
+for i,comp in enumerate(components[4:]):
+    with cols2[i]:
+        sc=comp["score"]
+        if sc<=35:      clr="#ff4444"; bg="#1a0000"
+        elif sc<=50:    clr="#ff8800"; bg="#140800"
+        elif sc<=65:    clr="#ffdd00"; bg="#141000"
+        else:           clr="#00ff88"; bg="#001a08"
+        bar_width=round(sc)
+        h=f"<div style='background:{bg};border:1px solid {clr}33;border-left:4px solid {clr};border-radius:12px;padding:14px;height:100%'>"
+        h+=f"<div style='font-size:1.2rem;margin-bottom:6px'>{comp['icon']}</div>"
+        h+=f"<div style='color:#aabbcc;font-size:0.72rem;font-weight:700;margin-bottom:8px'>{comp['name']}</div>"
+        h+=f"<div style='font-size:2rem;font-weight:900;color:{clr};margin-bottom:6px'>{sc}</div>"
+        h+=f"<div style='background:#0a0e1a;border-radius:3px;height:5px;margin-bottom:8px'><div style='background:{clr};width:{bar_width}%;height:5px;border-radius:3px'></div></div>"
+        if show_detail:
+            h+=f"<div style='color:#445566;font-size:0.7rem;line-height:1.5'>{comp['detail']}</div>"
+        h+="</div>"
+        st.markdown(h,unsafe_allow_html=True)
+
+# ── COMPONENT RADAR CHART ─────────────────────────────────────────────────
+st.markdown("<div class='section-title'>COMPONENT RADAR — FEAR vs GREED BALANCE</div>",unsafe_allow_html=True)
+labels=[c["name"].replace(" ⭐","") for c in components]
+values=[c["score"] for c in components]
+values_closed=values+[values[0]]
+labels_closed=labels+[labels[0]]
+
+radar=go.Figure()
+radar.add_trace(go.Scatterpolar(
+    r=values_closed,theta=labels_closed,fill="toself",
+    fillcolor=f"rgba({','.join(['255,68,68' if final_score<50 else '0,255,136'])},0.15)",
+    line={"color":fg_color,"width":2},name="Fear-Greed"
+))
+radar.add_trace(go.Scatterpolar(
+    r=[50]*len(labels_closed),theta=labels_closed,
+    line={"color":"#334455","width":1,"dash":"dash"},
+    name="Neutral (50)"
+))
+radar.update_layout(
+    polar={"radialaxis":{"range":[0,100],"tickfont":{"color":"#445566"},"gridcolor":"#1a2840"},
+           "angularaxis":{"tickfont":{"color":"#aabbcc"},"gridcolor":"#1a2840"},
+           "bgcolor":"#0d1626"},
+    paper_bgcolor="#070b14",height=380,
+    legend={"font":{"color":"#aabbcc"},"bgcolor":"#0d1626"},
+    margin=dict(l=60,r=60,t=30,b=30)
+)
+st.plotly_chart(radar,use_container_width=True,config={"displayModeBar":False},key="radar_chart")
+
+# ── HISTORICAL TREND ──────────────────────────────────────────────────────
+st.markdown("<div class='section-title'>FEAR-GREED TREND (5-DAY PROXY)</div>",unsafe_allow_html=True)
+trend=get_fg_trend()
+if trend:
+    trend_dates=[t["date"] for t in trend]
+    trend_scores=[t["score"] for t in trend]
+    trend_scores.append(final_score)
+    trend_dates.append("Today")
+    colors=[fg_color if s==final_score else ("#ff4444" if s<50 else "#00ff88") for s in trend_scores]
+    tf=go.Figure()
+    tf.add_hline(y=50,line_color="#334455",line_width=1,line_dash="dash",annotation_text="Neutral",annotation_font_color="#445566")
+    tf.add_hline(y=25,line_color="rgba(255,34,34,0.13)",line_width=1,line_dash="dot",annotation_text="Fear Zone",annotation_font_color="#ff4444")
+    tf.add_hline(y=75,line_color="rgba(0,255,136,0.13)",line_width=1,line_dash="dot",annotation_text="Greed Zone",annotation_font_color="#00ff88")
+    tf.add_trace(go.Scatter(x=trend_dates,y=trend_scores,mode="lines+markers+text",
+        line={"color":fg_color,"width":3},marker={"color":colors,"size":12},
+        text=[str(s) for s in trend_scores],textposition="top center",
+        textfont={"color":"#ccddee","size":11}))
+    tf.update_layout(paper_bgcolor="#070b14",plot_bgcolor="#0d1626",
+        xaxis={"tickfont":{"color":"#aabbcc"},"gridcolor":"#1a2840"},
+        yaxis={"range":[0,100],"tickfont":{"color":"#556677"},"gridcolor":"#1a2840"},
+        height=260,margin=dict(l=10,r=10,t=20,b=20),showlegend=False)
+    st.plotly_chart(tf,use_container_width=True,config={"displayModeBar":False},key="trend_chart")
 else:
-    sec_map={"IT":"IT","Banking":"BANK","Auto":"AUTO","Pharma":"PHARMA","Metal":"METAL","FMCG":"FMCG","Realty":"REALTY","Energy":"ENERGY"}
-    for k,v in sec_map.items():
-        if k in view: sec_key=v; break
-    else: sec_key="IT"
-    universe=SECTOR_UNIVERSE.get(sec_key,[]); u_label=view.split(" Sector")[0].strip()+" Sector"; u_count=len(universe)
+    st.info("Historical trend available after market data loads fully.")
 
-st.markdown("<div style='font-size:1.6rem;font-weight:800;color:#e0e0e0;border-bottom:1px solid #1a2840;padding-bottom:12px;margin-bottom:20px'>MARKET BREADTH INTELLIGENCE <span style='font-size:0.82rem;color:#445566'>"+now_str+"</span></div>",unsafe_allow_html=True)
+# ── PUT STRATEGY GUIDE ────────────────────────────────────────────────────
+st.markdown("<div class='section-title'>HOW TO USE FEAR-GREED FOR PUT TRADING</div>",unsafe_allow_html=True)
+guide_data=[
+    ("0-20","EXTREME FEAR","#ff0000","Caution — avoid new puts. Market panicking. Look for put profit booking."),
+    ("21-35","FEAR","#ff4444","Hold existing puts. Watch for stabilization before new entry."),
+    ("36-50","MILD FEAR","#ff8800","Neutral-bearish. Combine with Bear Score for confirmation."),
+    ("51-65","NEUTRAL","#ffdd00","Stand aside. Market balanced. Wait for greed to develop."),
+    ("66-75","MILD GREED","#88ff00","Watch carefully. Greed building. Prepare put positions."),
+    ("76-90","GREED","#00ff44","Good put entry zone! Market overconfident. Smart money selling."),
+    ("91-100","EXTREME GREED","#00ff88","BEST PUT ENTRY! Crash risk very high. Market at peak overconfidence."),
+]
+for zone,name,clr,desc in guide_data:
+    active=" border:2px solid "+clr+";" if zone.split("-")[0]<=str(int(final_score))<=zone.split("-")[1] else " border:1px solid #1a2840;"
+    active_badge="<span style='background:"+clr+";color:#000;padding:2px 8px;border-radius:20px;font-size:0.65rem;font-weight:800;margin-left:8px'>CURRENT</span>" if zone.split("-")[0]<=str(int(final_score))<=zone.split("-")[1] else ""
+    h=f"<div style='display:grid;grid-template-columns:0.6fr 1.2fr 3fr;gap:12px;align-items:center;background:#0d1626;{active}border-radius:8px;padding:10px 16px;margin-bottom:6px'>"
+    h+=f"<div style='color:{clr};font-weight:800;font-size:1rem'>{zone}</div>"
+    h+=f"<div style='color:{clr};font-weight:700;font-size:0.85rem'>{name}{active_badge}</div>"
+    h+=f"<div style='color:#556677;font-size:0.82rem'>{desc}</div></div>"
+    st.markdown(h,unsafe_allow_html=True)
 
-# Market context strip
-mc1,mc2,mc3,mc4=st.columns(4)
-nclr="#ff4444" if nifty_pct<0 else "#00ff88"
-vclr="#ff4444" if vix_p>20 else "#ff8800" if vix_p>17 else "#00ff88"
-with mc1: st.markdown(card("NIFTY",str(nifty_p),nclr,("+" if nifty_pct>=0 else "")+str(nifty_pct)+"% today","📊"),unsafe_allow_html=True)
-with mc2: st.markdown(card("VIX",str(vix_p),vclr,("+" if vix_pct>=0 else "")+str(vix_pct)+"%","😱"),unsafe_allow_html=True)
-with mc3: st.markdown(card("UNIVERSE",str(u_count)+" stocks","#4488ff","being analyzed","🔍"),unsafe_allow_html=True)
-with mc4: st.markdown(card("VIEW",u_label,"#cc44ff","breadth universe","📈"),unsafe_allow_html=True)
-
-# FETCH BREADTH
-with st.spinner("Calculating market breadth for "+str(u_count)+" stocks... Please wait..."):
-    breadth=calc_breadth(universe, u_label)
-
-if not breadth or breadth["total"]==0:
-    st.error("Breadth calculation failed. Market may be closed or data unavailable.")
-    st.stop()
-
-# ── BREADTH DASHBOARD ──
-st.markdown("<div class='section-title'>MARKET BREADTH — "+u_label.upper()+"</div>",unsafe_allow_html=True)
-
-# Big A/D display
-ratio_clr="#ff0000" if breadth["ad_ratio"]<0.3 else "#ff4444" if breadth["ad_ratio"]<0.6 else "#ff8800" if breadth["ad_ratio"]<0.8 else "#ffdd00" if breadth["ad_ratio"]<1.2 else "#44ff88" if breadth["ad_ratio"]<1.8 else "#00ff44"
-st.markdown("<div style='background:#0d1626;border:2px solid "+ratio_clr+";border-radius:16px;padding:24px;margin-bottom:16px'>"
-    +"<div style='display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:16px;align-items:center'>"
-    # Advancing
-    +"<div style='text-align:center'>"
-    +"<div style='font-size:3.5rem;font-weight:900;color:#00ff88'>"+str(breadth["advances"])+"</div>"
-    +"<div style='color:#445566;font-size:0.75rem;letter-spacing:2px'>ADVANCING</div>"
-    +"<div style='color:#00ff88;font-size:0.85rem;font-weight:700'>"+str(breadth["ad_pct"])+"%</div></div>"
-    # Declining
-    +"<div style='text-align:center'>"
-    +"<div style='font-size:3.5rem;font-weight:900;color:#ff4444'>"+str(breadth["declines"])+"</div>"
-    +"<div style='color:#445566;font-size:0.75rem;letter-spacing:2px'>DECLINING</div>"
-    +"<div style='color:#ff4444;font-size:0.85rem;font-weight:700'>"+str(breadth["dec_pct"])+"%</div></div>"
-    # Unchanged
-    +"<div style='text-align:center'>"
-    +"<div style='font-size:3.5rem;font-weight:900;color:#ffdd00'>"+str(breadth["unchanged"])+"</div>"
-    +"<div style='color:#445566;font-size:0.75rem;letter-spacing:2px'>UNCHANGED</div>"
-    +"<div style='color:#334455;font-size:0.85rem'>"+str(breadth["total"])+" total</div></div>"
-    # A/D Ratio
-    +"<div style='text-align:center;border-left:1px solid #1a2840;padding-left:16px'>"
-    +"<div style='font-size:3rem;font-weight:900;color:"+ratio_clr+"'>"+str(breadth["ad_ratio"])+"</div>"
-    +"<div style='color:#445566;font-size:0.75rem;letter-spacing:2px'>A/D RATIO</div>"
-    +"<div style='color:"+ratio_clr+";font-size:0.85rem;font-weight:700'>"+breadth["signal"]+"</div></div>"
-    # Signal
-    +"<div style='text-align:center;border-left:1px solid #1a2840;padding-left:16px'>"
-    +"<div style='font-size:0.72rem;color:#445566;letter-spacing:2px;margin-bottom:8px'>UNIVERSE</div>"
-    +"<div style='color:#ccddee;font-size:0.85rem'>"+str(breadth["total"])+" of "+str(breadth["total_attempted"])+" stocks</div>"
-    +"<div style='color:#334455;font-size:0.72rem;margin-top:4px'>fetched at "+breadth["fetched_at"]+"</div>"
-    +"</div>"
-    +"</div></div>",unsafe_allow_html=True)
-
-adv_pct_v=breadth["ad_pct"]; dec_pct_v=breadth["dec_pct"]; unc_pct_v=round(100-adv_pct_v-dec_pct_v,1)
-bar_html="<div style='margin-bottom:16px'>"
-bar_html+="<div style='display:flex;justify-content:space-between;margin-bottom:4px'>"
-bar_html+="<span style='color:#00ff88;font-size:0.78rem;font-weight:700'>"+str(adv_pct_v)+"% Advancing</span>"
-bar_html+="<span style='color:#ffdd00;font-size:0.78rem'>"+str(unc_pct_v)+"% Unchanged</span>"
-bar_html+="<span style='color:#ff4444;font-size:0.78rem;font-weight:700'>"+str(dec_pct_v)+"% Declining</span></div>"
-bar_html+="<div style='display:flex;border-radius:8px;overflow:hidden;height:24px'>"
-bar_html+="<div style='width:"+str(adv_pct_v)+"%;background:#00ff88;opacity:0.8'></div>"
-bar_html+="<div style='width:"+str(unc_pct_v)+"%;background:#334455'></div>"
-bar_html+="<div style='width:"+str(dec_pct_v)+"%;background:#ff4444;opacity:0.8'></div>"
-bar_html+="</div></div>"
-st.markdown(bar_html,unsafe_allow_html=True)
-
-st.markdown("<div class='section-title'>DIVERGENCE DETECTION</div>",unsafe_allow_html=True)
-divs=detect_divergence(breadth,nifty_pct)
-for div in divs:
-    sev_bg="#1a0000" if div["severity"] in ["EXTREME","HIGH"] else "#0d1626"
-    bw="3px" if div["severity"] in ["EXTREME","HIGH"] else "1px"
-    st.markdown("<div style='background:"+sev_bg+";border:"+bw+" solid "+div["clr"]+"44;border-left:5px solid "+div["clr"]+";border-radius:12px;padding:16px 20px;margin-bottom:10px'>"
-        +"<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:8px'>"
-        +"<div style='color:"+div["clr"]+";font-weight:800;font-size:1rem'>"+div["type"]+"</div>"
-        +"<div style='background:#0a0e1a;color:"+div["clr"]+";padding:3px 12px;border-radius:20px;font-size:0.75rem;font-weight:800'>"+div["severity"]+"</div></div>"
-        +"<div style='color:#ccddee;font-size:0.9rem;line-height:1.6'>"+div["msg"]+"</div>"
-        +"</div>",unsafe_allow_html=True)
-
-st.markdown("<div class='section-title'>BREADTH TRADING SIGNAL</div>",unsafe_allow_html=True)
-sig=breadth_trade_signal(breadth,nifty_pct,vix_pct)
-st.markdown("<div style='background:"+sig["bg"]+";border:2px solid "+sig["clr"]+";border-radius:14px;padding:24px;text-align:center;margin-bottom:16px'>"
-    +"<div style='font-size:0.72rem;color:#445566;letter-spacing:3px;margin-bottom:8px'>BREADTH SIGNAL — "+u_label.upper()+"</div>"
-    +"<div style='font-size:2rem;font-weight:900;color:"+sig["clr"]+";margin-bottom:12px'>"+sig["action"]+"</div>"
-    +"<div style='color:#aabbcc;font-size:0.9rem'>"+sig["reason"]+"</div>"
-    +("<div style='margin-top:12px'><div style='color:#445566;font-size:0.7rem'>CONFIDENCE</div><div style='font-size:1.5rem;font-weight:800;color:"+sig["clr"]+"'>"+str(sig["confidence"])+"%</div></div>" if sig["confidence"]>0 else "")
-    +"</div>",unsafe_allow_html=True)
-
-if show_trend:
-    st.markdown("<div class='section-title'>5-DAY BREADTH TREND</div>",unsafe_allow_html=True)
-    with st.spinner("Loading 5-day breadth trend..."):
-        trend=calc_breadth_trend(universe[:50])
-    if trend:
-        dates_t=[t["date"] for t in trend]
-        adv_t=[t["advances"] for t in trend]
-        dec_t=[t["declines"] for t in trend]
-        ratio_t=[t["ad_ratio"] for t in trend]
-        fig=go.Figure()
-        fig.add_trace(go.Bar(name="Advancing",x=dates_t,y=adv_t,marker_color="#00ff88",opacity=0.8))
-        fig.add_trace(go.Bar(name="Declining",x=dates_t,y=[-d for d in dec_t],marker_color="#ff4444",opacity=0.8))
-        fig.add_hline(y=0,line_color="#445566",line_width=1)
-        fig.update_layout(barmode="overlay",paper_bgcolor="#070b14",plot_bgcolor="#0d1626",
-            xaxis={"tickfont":{"color":"#778899"},"gridcolor":"#1a2840"},
-            yaxis={"tickfont":{"color":"#556677"},"gridcolor":"#1a2840","title":"Stock Count"},
-            height=250,margin=dict(l=10,r=10,t=20,b=20),
-            legend={"bgcolor":"#0d1626","font":{"color":"#aabbcc"}})
-        st.plotly_chart(fig,use_container_width=True,config={"displayModeBar":False},key="trend_chart")
-        # Trend direction
-        if len(ratio_t)>=2:
-            trend_dir="IMPROVING" if ratio_t[-1]>ratio_t[0] else "DETERIORATING" if ratio_t[-1]<ratio_t[0] else "STABLE"
-            td_clr="#00ff88" if trend_dir=="IMPROVING" else "#ff4444" if trend_dir=="DETERIORATING" else "#ffdd00"
-            st.markdown("<div style='background:#0d1626;border:1px solid #1a2840;border-left:4px solid "+td_clr+";border-radius:8px;padding:12px 18px'>"
-                +"<div style='color:"+td_clr+";font-weight:800;font-size:0.9rem'>BREADTH TREND: "+trend_dir+"</div>"
-                +"<div style='color:#445566;font-size:0.8rem;margin-top:4px'>5-day A/D trend: "+str(ratio_t[0])+" → "+str(ratio_t[-1])+"</div>"
-                +"</div>",unsafe_allow_html=True)
-    else:
-        st.info("Trend data available during/after market hours.")
-
-if show_stocks and breadth["details"]:
-    st.markdown("<div class='section-title'>TOP DECLINERS & ADVANCERS</div>",unsafe_allow_html=True)
-    tm1,tm2=st.columns(2)
-    with tm1:
-        st.markdown("<div style='font-size:0.78rem;color:#ff4444;font-weight:700;margin-bottom:8px'>TOP DECLINERS</div>",unsafe_allow_html=True)
-        for stk in breadth["top_decliners"][:7]:
-            row="<div style='display:flex;justify-content:space-between;background:#1a0000;border-left:3px solid #ff4444;border-radius:4px;padding:6px 12px;margin-bottom:4px'>"
-            row+="<span style='color:#ccddee;font-weight:700'>"+stk["sym"]+"</span>"
-            row+="<span style='color:#ff4444;font-weight:800'>"+str(stk["pct"])+"%</span>"
-            row+="</div>"
-            st.markdown(row,unsafe_allow_html=True)
-    with tm2:
-        st.markdown("<div style='font-size:0.78rem;color:#00ff88;font-weight:700;margin-bottom:8px'>TOP ADVANCERS</div>",unsafe_allow_html=True)
-        for stk in breadth["top_advancers"][:7]:
-            row="<div style='display:flex;justify-content:space-between;background:#001a08;border-left:3px solid #00ff88;border-radius:4px;padding:6px 12px;margin-bottom:4px'>"
-            row+="<span style='color:#ccddee;font-weight:700'>"+stk["sym"]+"</span>"
-            row+="<span style='color:#00ff88;font-weight:800'>+"+str(stk["pct"])+"%</span>"
-            row+="</div>"
-            st.markdown(row,unsafe_allow_html=True)
-
+# ── AI INTERPRETATION ─────────────────────────────────────────────────────
 if api and auto_ai:
-    st.markdown("<div class='section-title'>AI BREADTH INTERPRETATION</div>",unsafe_allow_html=True)
-    div_text=divs[0]["type"]+" — "+divs[0]["msg"] if divs else "No divergence"
-    p=("BearIQ market breadth analyst.\n\n"
-        +"BREADTH DATA ("+u_label+"):\n"
-        +"Universe: "+str(breadth["total"])+" stocks analyzed\n"
-        +"Advancing: "+str(breadth["advances"])+" ("+str(breadth["ad_pct"])+"%)\n"
-        +"Declining: "+str(breadth["declines"])+" ("+str(breadth["dec_pct"])+"%)\n"
-        +"A/D Ratio: "+str(breadth["ad_ratio"])+" — "+breadth["signal"]+"\n"
-        +"Nifty: "+str(nifty_p)+" ("+str(nifty_pct)+"% today)\n"
-        +"VIX: "+str(vix_p)+" ("+str(vix_pct)+"%)\n"
-        +"Divergence: "+div_text+"\n"
-        +"Trading Signal: "+sig["action"]+" ("+str(sig["confidence"])+"% confidence)\n\n"
-        +"Give professional market breadth analysis:\n"
-        +"1. BREADTH READING: What "+str(breadth["ad_ratio"])+" A/D ratio tells us right now\n"
-        +"2. DIVERGENCE IMPACT: Is divergence signal reliable here?\n"
-        +"3. TRADING RECOMMENDATION: Should trader buy puts, avoid, or wait?\n"
-        +"4. KEY WATCH LEVEL: What A/D ratio would change your view?\n"
-        +"5. CONFIDENCE: Overall confidence in bearish trade right now (%)\n\n"
-        +"Be direct. Use exact numbers. This is for professional F&O traders.")
-    with st.spinner("AI analyzing market breadth..."): ai_r=groq(p,api,700)
-    st.markdown("<div class='ai-box'><div style='font-size:0.7rem;color:#3388ff;font-weight:800;margin-bottom:12px'>BEARIQ AI — BREADTH INTERPRETATION</div><div style='color:#ccddee;font-size:0.92rem;line-height:1.85'>"+ai_r.replace("\n","<br>")+"</div></div>",unsafe_allow_html=True)
+    st.markdown("<div class='section-title'>AI FEAR-GREED INTERPRETATION</div>",unsafe_allow_html=True)
+    comp_summary="\n".join([f"- {c['name']}: {c['score']}/100 — {c['detail']}" for c in components])
+    p=(f"BearIQ India Fear-Greed Index analyst.\n\n"
+       f"INDIA FEAR-GREED SCORE: {final_score}/100 — {label}\n\n"
+       f"7 COMPONENTS:\n{comp_summary}\n\n"
+       f"Market data:\n"
+       f"- Nifty: {nifty_curr}\n"
+       f"- VIX: {vix_curr} ({('+' if vix_pct_above>=0 else '')}{vix_pct_above}% vs 20MA)\n"
+       f"- USD/INR: {usdinr}\n"
+       f"- Crude: ${crude_price}\n"
+       f"- A/D Ratio: {round(adv/dec,2) if dec>0 else '5+'}\n\n"
+       f"Give F&O trader interpretation:\n"
+       f"1. FEAR-GREED READING: What {final_score}/100 means for market right now\n"
+       f"2. KEY DRIVER: Which component is most significant and why\n"
+       f"3. DIVERGENCE: Any component diverging from the overall score?\n"
+       f"4. PUT STRATEGY: Exactly what put trader should do now\n"
+       f"5. WATCH FOR: What change in this index would trigger action\n"
+       f"6. CONFIDENCE: Overall confidence in current reading (%)\n\n"
+       f"Be direct. Use exact numbers. For F&O traders only.")
+    with st.spinner("AI analyzing India Fear-Greed Index..."): ai_r=groq(p,api,700)
+    st.markdown(f"<div class='ai-box'><div style='font-size:0.7rem;color:#3388ff;font-weight:800;margin-bottom:12px'>BEARIQ AI — FEAR-GREED INTERPRETATION</div><div style='color:#ccddee;font-size:0.92rem;line-height:1.85'>{ai_r.replace(chr(10),'<br>')}</div></div>",unsafe_allow_html=True)
 
-st.markdown("<div style='background:#0d1626;border:1px solid #1a2840;border-radius:8px;padding:10px 14px;color:#334455;font-size:0.72rem;margin-top:10px'>⚠ Not SEBI registered advice.</div>",unsafe_allow_html=True)
+st.markdown("<div style='background:#0d1626;border:1px solid #1a2840;border-radius:8px;padding:10px 14px;color:#334455;font-size:0.72rem;margin-top:10px'>⚠ India's first F&O Fear-Greed Index by BearIQ
+
