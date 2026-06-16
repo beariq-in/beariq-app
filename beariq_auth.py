@@ -45,82 +45,49 @@ def get_session_key(username):
     return hashlib.sha256(seed.encode()).hexdigest()[:32]
 
 def save_session(username):
-    """Save session — both state + persistent token via URL"""
+    """Save session in state + persistent URL token (survives refresh)"""
+    token = get_session_key(username)
     st.session_state["beariq_user"] = username
-    st.session_state["beariq_session_key"] = get_session_key(username)
+    st.session_state["beariq_session_key"] = token
     st.session_state["beariq_login_time"] = datetime.now().isoformat()
-    # Save token to users file so we can restore on refresh
+    # Update users file
     users = load_users()
     if username in users:
         users[username]["last_login"] = datetime.now().strftime("%d %b %Y %I:%M %p")
         users[username]["login_count"] = users[username].get("login_count", 0) + 1
-        users[username]["session_token"] = get_session_key(username)
-        users[username]["session_date"] = datetime.now().isoformat()
         save_users(users)
-    # Inject JS to save login in localStorage
-    _token = get_session_key(username)
-    st.markdown(f"""<script>
-    try {{
-        localStorage.setItem('beariq_user', '{username}');
-        localStorage.setItem('beariq_token', '{_token}');
-        localStorage.setItem('beariq_time', new Date().toISOString());
-    }} catch(e) {{}}
-    </script>""", unsafe_allow_html=True)
-
-def restore_session_from_storage():
-    """Try to restore session from localStorage on page load"""
-    if "beariq_user" in st.session_state:
-        return True
-    # Inject JS to read localStorage and set URL param
-    st.markdown("""<script>
-    try {
-        var user = localStorage.getItem('beariq_user');
-        var token = localStorage.getItem('beariq_token');
-        var time = localStorage.getItem('beariq_time');
-        if (user && token && time) {
-            var stored = new Date(time);
-            var now = new Date();
-            var days = (now - stored) / (1000 * 60 * 60 * 24);
-            if (days < 30) {
-                var url = new URL(window.location.href);
-                if (!url.searchParams.get('_auth_user')) {
-                    url.searchParams.set('_auth_user', user);
-                    url.searchParams.set('_auth_token', token);
-                    window.location.href = url.toString();
-                }
-            } else {
-                localStorage.removeItem('beariq_user');
-                localStorage.removeItem('beariq_token');
-                localStorage.removeItem('beariq_time');
-            }
-        }
-    } catch(e) {}
-    </script>""", unsafe_allow_html=True)
-    return False
-
-def is_logged_in():
-    """Check if user has valid session — restore from localStorage if needed"""
-    # Try URL params first (set by localStorage JS)
+    # Set URL params — these PERSIST across refresh (stay in URL bar)
     try:
-        params = st.query_params
-        auth_user = params.get("_auth_user", "")
-        auth_token = params.get("_auth_token", "")
-        if auth_user and auth_token:
-            expected = get_session_key(auth_user)
-            if auth_token == expected:
-                users = load_users()
-                user = users.get(auth_user, {})
-                if user.get("status") == "active":
-                    # Restore session state
-                    st.session_state["beariq_user"] = auth_user
-                    st.session_state["beariq_session_key"] = auth_token
-                    st.session_state["beariq_login_time"] = datetime.now().isoformat()
-                    # Clear params from URL (clean URL)
-                    st.query_params.clear()
-                    return True
+        st.query_params["u"] = username
+        st.query_params["t"] = token
     except: pass
 
-    # Check session state
+def is_logged_in():
+    """Check session — URL token persists across refresh (Streamlit Cloud safe)"""
+    # PRIORITY 1: Check URL params (these survive refresh)
+    try:
+        params = st.query_params
+        url_user = params.get("u", "")
+        url_token = params.get("t", "")
+        if url_user and url_token:
+            expected = get_session_key(url_user)
+            if url_token == expected:
+                users = load_users()
+                user = users.get(url_user, {})
+                if user.get("status") == "active":
+                    # Valid token — restore session, KEEP url params
+                    st.session_state["beariq_user"] = url_user
+                    st.session_state["beariq_session_key"] = url_token
+                    st.session_state["beariq_login_time"] = datetime.now().isoformat()
+                    return True
+                else:
+                    # User inactive — clear params
+                    try: st.query_params.clear()
+                    except: pass
+                    return False
+    except: pass
+
+    # PRIORITY 2: Check session state (same-session navigation)
     if "beariq_user" not in st.session_state:
         return False
     if "beariq_session_key" not in st.session_state:
@@ -129,19 +96,17 @@ def is_logged_in():
     expected_key = get_session_key(username)
     if st.session_state["beariq_session_key"] != expected_key:
         return False
-    login_time = st.session_state.get("beariq_login_time")
-    if login_time:
-        try:
-            lt = datetime.fromisoformat(login_time)
-            if (datetime.now() - lt).days >= SESSION_DAYS:
-                logout()
-                return False
-        except: pass
     users = load_users()
     user = users.get(username, {})
     if user.get("status") != "active":
         logout()
         return False
+    # Re-set URL params if missing (ensures refresh works)
+    try:
+        if not st.query_params.get("u"):
+            st.query_params["u"] = username
+            st.query_params["t"] = expected_key
+    except: pass
     return True
 
 def get_current_user():
@@ -154,14 +119,10 @@ def logout():
     for key in ["beariq_user","beariq_session_key","beariq_login_time"]:
         if key in st.session_state:
             del st.session_state[key]
-    # Clear localStorage too
-    st.markdown("""<script>
-    try {
-        localStorage.removeItem('beariq_user');
-        localStorage.removeItem('beariq_token');
-        localStorage.removeItem('beariq_time');
-    } catch(e) {}
-    </script>""", unsafe_allow_html=True)
+    # Clear URL params so refresh won't auto-login
+    try:
+        st.query_params.clear()
+    except: pass
 
 # ── UI STYLES ────────────────────────────────────────────────────
 AUTH_CSS = """
