@@ -1,4 +1,345 @@
-import base64
-code="IiIiCkJlYXJJUSBNYXJrZXQgV2VhdGhlciBJbnRlbGxpZ2VuY2UKUHJlbWl1bSBEYXNoYm9hcmQg4oCUIEFwcGxlIFdlYXRoZXIgeCBDUkVEIHggVHJhZGluZ1ZpZXcKIiIiCmltcG9ydCBzdHJlYW1saXQgYXMgc3QKaW1wb3J0IHN5cywgb3MKc3lzLnBhdGguaW5zZXJ0KDAsIG9zLnBhdGguZGlybmFtZShvcy5wYXRoLmFic3BhdGgoX19maWxlX18pKSkKCnN0LnNldF9wYWdlX2NvbmZpZygKICAgIHBhZ2VfdGl0bGU9IkJlYXJJUSDigJQgTWFya2V0IFdlYXRoZXIgSW50ZWxsaWdlbmNlIiwKICAgIHBhZ2VfaWNvbj0i8J+QuyIsCiAgICBsYXlvdXQ9IndpZGUiLAogICAgaW5pdGlhbF9zaWRlYmFyX3N0YXRlPSJjb2xsYXBzZWQiCikKCmZyb20gYmVhcmlxX2F1dGggaW1wb3J0IChpc19sb2dnZWRfaW4sIGdldF9jdXJyZW50X3VzZXIsIGlzX2FkbWluLAogICAgICAgICAgICAgICAgICAgICAgICAgIHJlbmRlcl9sb2dpbiwgcmVuZGVyX25hdmJhciwgcmVuZGVyX2FkbWluX3VzZXJzLCBsb2dvdXQpCmZyb20gYmVhcmlxX2FuYWx5dGljcyBpbXBvcnQgdHJhY2ssIHJlbmRlcl9hbmFseXRpY3NfcGFnZQpmcm9tIGJlYXJpcV93ZWF0aGVyIGltcG9ydCAocmVuZGVyX3dlYXRoZXJfcGFnZSwgbG9hZF93ZWF0aGVyX3JlcG9ydHMsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZmV0Y2hfaW5kaWFfZGF0YSwgZmV0Y2hfZ2xvYmFsX2RhdGEsIGZldGNoX3NlY3Rvcl9kYXRhLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNhbGN1bGF0ZV9zY29yZXMsIGNhbGN1bGF0ZV9jb25maWRlbmNlLCBnZXRfd2VhdGhlciwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICBmZXRjaF9tYXJrZXRfbmV3cykKCmltcG9ydCB5ZmluYW5jZSBhcyB5ZgppbXBvcnQgcmVxdWVzdHMKZnJvbSBkYXRldGltZSBpbXBvcnQgZGF0ZXRpbWUsIHRpbWVkZWx0YQoKIyDilIDilIAgUFJFTUlVTSBERVNJR04gU1lTVEVNIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgApzdC5tYXJrZG93bigiIiI8c3R5bGU+CkBpbXBvcnQgdXJsKCdodHRwczovL2ZvbnRzLmdvb2dsZWFwaXMuY29tL2NzczI/ZmFtaWx5PUludGVyOndnaHRANDAwOzUwMDs2MDA7NzAwOzgwMDs5MDAmZGlzcGxheT1zd2FwJyk7Cmh0bWwsYm9keSxbY2xhc3MqPSJjc3MiXXtmb250LWZhbWlseTonSW50ZXInLC1hcHBsZS1zeXN0ZW0sc2Fucy1zZXJpZiFpbXBvcnRhbnR9Ci5zdEFwcHtiYWNrZ3JvdW5kOiMwNzA5MGY7Y29sb3I6I2U3ZWFmMH0KW2RhdGEtdGVzdGlkPSJzdFNpZGViYXIiXXtiYWNrZ3JvdW5kLWNvbG9yOiMwYTBkMTU7Ym9yZGVyLXJpZ2h0OjFweCBzb2xpZCAjMWExZjJlfQpbZGF0YS10ZXN0aWQ9InN0SGVhZGVyIl17YmFja2dyb3VuZDp0cmFuc3BhcmVudH0KLmJsb2NrLWNvbnRhaW5lcntwYWRkaW5nLXRvcDoxcmVtO21heC13aWR0aDo2ODBweCFpbXBvcnRhbnQ7bWFyZ2luOjAgYXV0b30KLnNlY3Rpb24tdGl0bGV7Zm9udC1zaXplOjAuNzJyZW07Zm9udC13ZWlnaHQ6NzAwO2NvbG9yOiM1YjY0Nzg7dGV4dC10cmFuc2Zvcm06dXBwZXJjYXNlOwogICAgbGV0dGVyLXNwYWNpbmc6MnB4O21hcmdpbjoyOHB4IDAgMTJweCA0cHh9Ci5zdEJ1dHRvbj5idXR0b257YmFja2dyb3VuZDojMTYxYjI4O2NvbG9yOiNhYWI0Y2M7Ym9yZGVyOjFweCBzb2xpZCAjMjMyYTNkOwogICAgYm9yZGVyLXJhZGl1czoxNHB4O2ZvbnQtd2VpZ2h0OjYwMDtwYWRkaW5nOjEycHg7dHJhbnNpdGlvbjphbGwgMC4yczt3aWR0aDoxMDAlfQouc3RCdXR0b24+YnV0dG9uOmhvdmVye2JhY2tncm91bmQ6IzFkMjQzNjtib3JkZXItY29sb3I6IzJmMzg1MH0KW2RhdGEtdGVzdGlkPSJjb2xsYXBzZWRDb250cm9sIl17ZGlzcGxheTpibG9jayFpbXBvcnRhbnQ7dmlzaWJpbGl0eTp2aXNpYmxlIWltcG9ydGFudDtjb2xvcjojZjg3MTcxIWltcG9ydGFudH0KaDEsaDIsaDN7Y29sb3I6I2YxZjVmOSFpbXBvcnRhbnR9Cmhye2JvcmRlci1jb2xvcjojMWExZjJlIWltcG9ydGFudH0KI01haW5NZW51e3Zpc2liaWxpdHk6aGlkZGVuIWltcG9ydGFudH0KZm9vdGVye2Rpc3BsYXk6bm9uZSFpbXBvcnRhbnQ7dmlzaWJpbGl0eTpoaWRkZW4haW1wb3J0YW50O2hlaWdodDowIWltcG9ydGFudDtvdmVyZmxvdzpoaWRkZW4haW1wb3J0YW50fQouc3REZXBsb3lCdXR0b257ZGlzcGxheTpub25lIWltcG9ydGFudH0KW2RhdGEtdGVzdGlkPSJzdERlY29yYXRpb24iXXtkaXNwbGF5Om5vbmUhaW1wb3J0YW50fQpbZGF0YS10ZXN0aWQ9InN0Rm9vdGVyIl17ZGlzcGxheTpub25lIWltcG9ydGFudH0KW2NsYXNzKj0idmlld2VyQmFkZ2UiXXtkaXNwbGF5Om5vbmUhaW1wb3J0YW50O3Zpc2liaWxpdHk6aGlkZGVuIWltcG9ydGFudH0KW2NsYXNzKj0iU3RhdHVzV2lkZ2V0Il17ZGlzcGxheTpub25lIWltcG9ydGFudH0KW2NsYXNzKj0iY3JlYXRlZEJ5Il17ZGlzcGxheTpub25lIWltcG9ydGFudH0KaWZyYW1lW3RpdGxlKj0ic3RyZWFtbGl0Il17ZGlzcGxheTpub25lIWltcG9ydGFudH0KZGl2W2NsYXNzKj0iYmFkZ2UiXXtkaXNwbGF5Om5vbmUhaW1wb3J0YW50fQouc3RyZWFtbGl0LWZvb3RlcntkaXNwbGF5Om5vbmUhaW1wb3J0YW50fQpkaXY6aGFzKD4gYVtocmVmKj0ic3RyZWFtbGl0LmlvIl0pe2Rpc3BsYXk6bm9uZSFpbXBvcnRhbnQ7aGVpZ2h0OjAhaW1wb3J0YW50fQpkaXY6aGFzKD4gW2NsYXNzKj0idmlld2VyQmFkZ2UiXSl7ZGlzcGxheTpub25lIWltcG9ydGFudDtoZWlnaHQ6MCFpbXBvcnRhbnR9CltkYXRhLXRlc3RpZD0iY29sbGFwc2VkQ29udHJvbCJde2Rpc3BsYXk6YmxvY2shaW1wb3J0YW50O3Zpc2liaWxpdHk6dmlzaWJsZSFpbXBvcnRhbnQ7Y29sb3I6I2Y4NzE3MSFpbXBvcnRhbnR9Cjwvc3R5bGU+IiIiLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQoKIyDilIDilIAgQVVUTyBSRVBPUlQgVFJJR0dFUiAoZm9yIGNyb24gc2VydmljZSkg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACmZyb20gYmVhcmlxX3dlYXRoZXIgaW1wb3J0IGdlbmVyYXRlX3dlYXRoZXJfcmVwb3J0LCBzZW5kX2VtYWlsX3JlcG9ydApfcGFyYW1zID0gc3QucXVlcnlfcGFyYW1zCmlmIF9wYXJhbXMuZ2V0KCJhY3Rpb24iKSA9PSAiZ2VuZXJhdGUiIGFuZCBfcGFyYW1zLmdldCgia2V5IikgPT0gImJlYXJpcV9tb3JuaW5nXzIwMjYiOgogICAgX3RvZGF5ID0gZGF0ZXRpbWUubm93KCkuc3RyZnRpbWUoIiVkICViICVZIikKICAgIF9ub3cgPSBkYXRldGltZS5ub3coKQogICAgX3JlcG9ydHMgPSBsb2FkX3dlYXRoZXJfcmVwb3J0cygpCiAgICBfaGFzX3RvZGF5ID0gYW55KHIuZ2V0KCJkYXRlIikgPT0gX3RvZGF5IGFuZCByLmdldCgidHlwZSIpID09ICJtb3JuaW5nX291dGxvb2siIGZvciByIGluIF9yZXBvcnRzKQogICAgaWYgbm90IF9oYXNfdG9kYXkgYW5kIF9ub3cud2Vla2RheSgpIDwgNSBhbmQgX25vdy5ob3VyID49IDY6CiAgICAgICAgdHJ5OgogICAgICAgICAgICBfcmVwb3J0ID0gZ2VuZXJhdGVfd2VhdGhlcl9yZXBvcnQoKQogICAgICAgICAgICBfc2VudCwgX21zZyA9IHNlbmRfZW1haWxfcmVwb3J0KF9yZXBvcnQpCiAgICAgICAgICAgIHN0Lm1hcmtkb3duKGYiPGRpdiBzdHlsZT0nYmFja2dyb3VuZDojMTIxNjFmO3BhZGRpbmc6MjBweDtib3JkZXItcmFkaXVzOjEycHg7dGV4dC1hbGlnbjpjZW50ZXInPiIKICAgICAgICAgICAgICAgICAgICAgICBmIjxkaXYgc3R5bGU9J2NvbG9yOiM1ZGZmYTA7Zm9udC13ZWlnaHQ6NzAwO2ZvbnQtc2l6ZToxLjJyZW0nPkJlYXJJUSBNb3JuaW5nIE91dGxvb2sgR2VuZXJhdGVkPC9kaXY+IgogICAgICAgICAgICAgICAgICAgICAgIGYiPGRpdiBzdHlsZT0nY29sb3I6Izk0YTNiODttYXJnaW4tdG9wOjhweCc+UmVwb3J0OiB7X3RvZGF5fTwvZGl2PiIKICAgICAgICAgICAgICAgICAgICAgICBmIjxkaXYgc3R5bGU9J2NvbG9yOiM5NGEzYjgnPkVtYWlsOiB7X21zZ308L2Rpdj48L2Rpdj4iLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQogICAgICAgIGV4Y2VwdCBFeGNlcHRpb24gYXMgZToKICAgICAgICAgICAgc3QubWFya2Rvd24oZiI8ZGl2IHN0eWxlPSdjb2xvcjojZmY3YTdhJz5FcnJvcjoge2V9PC9kaXY+IiwgdW5zYWZlX2FsbG93X2h0bWw9VHJ1ZSkKICAgIGVsaWYgX2hhc190b2RheToKICAgICAgICBzdC5tYXJrZG93bigiPGRpdiBzdHlsZT0nYmFja2dyb3VuZDojMTIxNjFmO3BhZGRpbmc6MjBweDtib3JkZXItcmFkaXVzOjEycHg7dGV4dC1hbGlnbjpjZW50ZXI7Y29sb3I6Izk0YTNiOCc+VG9kYXkncyByZXBvcnQgYWxyZWFkeSBnZW5lcmF0ZWQuPC9kaXY+IiwgdW5zYWZlX2FsbG93X2h0bWw9VHJ1ZSkKICAgIGVsc2U6CiAgICAgICAgc3QubWFya2Rvd24oIjxkaXYgc3R5bGU9J2JhY2tncm91bmQ6IzEyMTYxZjtwYWRkaW5nOjIwcHg7Ym9yZGVyLXJhZGl1czoxMnB4O3RleHQtYWxpZ246Y2VudGVyO2NvbG9yOiM5NGEzYjgnPk5vdCBhIG1hcmtldCBkYXkgb3IgdG9vIGVhcmx5LjwvZGl2PiIsIHVuc2FmZV9hbGxvd19odG1sPVRydWUpCiAgICBzdC5zdG9wKCkKCiMg4pSA4pSAIEFVVEggR0FURSDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKaWYgbm90IGlzX2xvZ2dlZF9pbigpOgogICAgcmVuZGVyX2xvZ2luKCkKICAgIHN0LnN0b3AoKQoKdXNlcm5hbWUgPSBnZXRfY3VycmVudF91c2VyKCkKYWRtaW4gPSBpc19hZG1pbigpCm5vdyA9IGRhdGV0aW1lLm5vdygpCnRvZGF5ID0gbm93LnN0cmZ0aW1lKCIlZCAlYiAlWSIpCgojIOKUgOKUgCBTSURFQkFSIE5BViDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKcmVuZGVyX25hdmJhcigpCndpdGggc3Quc2lkZWJhcjoKICAgIHN0Lm1hcmtkb3duKCI8ZGl2IHN0eWxlPSdmb250LXNpemU6MC42OHJlbTtjb2xvcjojNWI2NDc4O2xldHRlci1zcGFjaW5nOjJweDt0ZXh0LXRyYW5zZm9ybTp1cHBlcmNhc2U7bWFyZ2luLWJvdHRvbTo4cHgnPk5BVklHQVRJT048L2Rpdj4iLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQogICAgcGFnZXMgPSBbIvCfj6AgSG9tZSIsICLwn4yh77iPIEZlYXItR3JlZWQiLCAi8J+OryBNYXJrZXQgUmVnaW1lIiwKICAgICAgICAgICAgICLimqDvuI8gRWFybHkgV2FybmluZyIsICLwn5OKIE1hcmtldCBCcmVhZHRoIiwgIvCfjKTvuI8gV2VhdGhlciBSZXBvcnRzIl0KICAgIGlmIGFkbWluOgogICAgICAgIHBhZ2VzICs9IFsi8J+TiCBBbmFseXRpY3MiLCAi8J+RpCBVc2VycyJdCiAgICBwYWdlID0gc3QucmFkaW8oIiIsIHBhZ2VzLCBsYWJlbF92aXNpYmlsaXR5PSJjb2xsYXBzZWQiKQoKIyDilIDilIAgREFUQSBIRUxQRVJTIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgApkZWYgZ2V0X3llc3RlcmRheV9yZXBvcnQoKToKICAgICIiIkdldCBsYXN0IHJlcG9ydCBmcm9tIGEgcHJldmlvdXMgZGF5IGZvciBjb21wYXJpc29uIiIiCiAgICByZXBvcnRzID0gbG9hZF93ZWF0aGVyX3JlcG9ydHMoKQogICAgcHJldiA9IFtyIGZvciByIGluIHJlcG9ydHMgaWYgci5nZXQoImRhdGUiKSAhPSB0b2RheV0KICAgIHJldHVybiBwcmV2Wy0xXSBpZiBwcmV2IGVsc2UgTm9uZQoKIyDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZAKIyBIT01FIOKAlCBQUkVNSVVNIERBU0hCT0FSRAojIOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkAppZiAiSG9tZSIgaW4gcGFnZToKICAgIHRyYWNrKHVzZXJuYW1lLCAiaG9tZSIpCgogICAgd2l0aCBzdC5zcGlubmVyKCIiKToKICAgICAgICBkID0gZmV0Y2hfaW5kaWFfZGF0YSgpCiAgICAgICAgZyA9IGZldGNoX2dsb2JhbF9kYXRhKCkKICAgICAgICBzY29yZXMgPSBjYWxjdWxhdGVfc2NvcmVzKGQsIGcpCiAgICAgICAgc2VjdG9ycyA9IGZldGNoX3NlY3Rvcl9kYXRhKCkKICAgICAgICBjb25maWRlbmNlID0gY2FsY3VsYXRlX2NvbmZpZGVuY2Uoc2NvcmVzLCBkLCBnLCBzZWN0b3JzKQoKICAgIGZnID0gc2NvcmVzLmdldCgiZmVhcl9ncmVlZCIsIDUwKQogICAgZmdfbGFiZWwgPSBzY29yZXMuZ2V0KCJmZ19sYWJlbCIsICJORVVUUkFMIikKICAgIGJzID0gc2NvcmVzLmdldCgiYmVhcl9zY29yZSIsIDApCiAgICBieiA9IHNjb3Jlcy5nZXQoImJlYXJfem9uZSIsICJDQUxNIikKICAgIG5pZnR5ID0gZC5nZXQoIm5pZnR5IiwgMCkKICAgIG5wXyA9IGQuZ2V0KCJuaWZ0eV9wY3QiLCAwKQogICAgdml4ID0gZC5nZXQoInZpeCIsIDE1KQogICAgdnBfID0gZC5nZXQoInZpeF9wY3QiLCAwKQogICAgYWQgPSBkLmdldCgiYWRfcmF0aW8iLCAxLjApCiAgICBibiA9IGQuZ2V0KCJiYW5rbmlmdHkiLCAwKQogICAgYm5wID0gZC5nZXQoImJhbmtuaWZ0eV9wY3QiLCAwKQoKICAgICMg4pSA4pSAIDEuIEhFUk8gQ0FSRCDigJQgQXBwbGUgV2VhdGhlciBTdHlsZSDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICMgR3JhZGllbnQgKyBlbW9qaSBieSBjb25kaXRpb24KICAgIGlmIGZnIDw9IDIwOgogICAgICAgIGdyYWQgPSAibGluZWFyLWdyYWRpZW50KDE2MGRlZywjMmQxMTE1IDAlLCMxYTBhMGQgNjAlLCMwYTA2MDggMTAwJSkiCiAgICAgICAgYWNjZW50ID0gIiNmZjVkNWQiOyBlbW9qaSA9ICLim4jvuI8iOyBjb25kaXRpb24gPSAiRXh0cmVtZSBGZWFyIgogICAgICAgIHN1YiA9ICJIZWF2eSBzZWxsaW5nIHByZXNzdXJlIGFjcm9zcyB0aGUgbWFya2V0IgogICAgZWxpZiBmZyA8PSAzNToKICAgICAgICBncmFkID0gImxpbmVhci1ncmFkaWVudCgxNjBkZWcsIzJiMWExMCAwJSwjMWExMDBhIDYwJSwjMGEwNzA1IDEwMCUpIgogICAgICAgIGFjY2VudCA9ICIjZmY4YzVkIjsgZW1vamkgPSAi8J+Mp++4jyI7IGNvbmRpdGlvbiA9ICJGZWFyIgogICAgICAgIHN1YiA9ICJDYXV0aW9uIGluIHRoZSBhaXIg4oCUIGZlYXIgYnVpbGRpbmciCiAgICBlbGlmIGZnIDw9IDUwOgogICAgICAgIGdyYWQgPSAibGluZWFyLWdyYWRpZW50KDE2MGRlZywjMjUyMDE3IDAlLCMxNjEzMGQgNjAlLCMwYTA5MDYgMTAwJSkiCiAgICAgICAgYWNjZW50ID0gIiNmZmMyNWQiOyBlbW9qaSA9ICLwn4ym77iPIjsgY29uZGl0aW9uID0gIk1pbGQgRmVhciIKICAgICAgICBzdWIgPSAiTWl4ZWQgc2tpZXMg4oCUIHNsaWdodCB1bmVhc2UgaW4gdGhlIG1hcmtldCIKICAgIGVsaWYgZmcgPD0gNjU6CiAgICAgICAgZ3JhZCA9ICJsaW5lYXItZ3JhZGllbnQoMTYwZGVnLCMxNDFhMjYgMCUsIzBkMTExOCA2MCUsIzA3MGEwZiAxMDAlKSIKICAgICAgICBhY2NlbnQgPSAiIzdkYTRmZiI7IGVtb2ppID0gIuKbhSI7IGNvbmRpdGlvbiA9ICJOZXV0cmFsIgogICAgICAgIHN1YiA9ICJDYWxtIGNvbmRpdGlvbnMg4oCUIG1hcmtldCBpbiBiYWxhbmNlIgogICAgZWxpZiBmZyA8PSA4MDoKICAgICAgICBncmFkID0gImxpbmVhci1ncmFkaWVudCgxNjBkZWcsIzEwMjQxYSAwJSwjMGExNzEwIDYwJSwjMDYwZDA5IDEwMCUpIgogICAgICAgIGFjY2VudCA9ICIjNWRmZjlmIjsgZW1vamkgPSAi8J+MpO+4jyI7IGNvbmRpdGlvbiA9ICJHcmVlZCIKICAgICAgICBzdWIgPSAiT3B0aW1pc20gcmlzaW5nIOKAlCBjb25maWRlbmNlIGluIHRoZSBtYXJrZXQiCiAgICBlbHNlOgogICAgICAgIGdyYWQgPSAibGluZWFyLWdyYWRpZW50KDE2MGRlZywjMGQyYTFjIDAlLCMwODFhMTEgNjAlLCMwNTBmMGEgMTAwJSkiCiAgICAgICAgYWNjZW50ID0gIiMzZGZmYTAiOyBlbW9qaSA9ICLimIDvuI8iOyBjb25kaXRpb24gPSAiRXh0cmVtZSBHcmVlZCIKICAgICAgICBzdWIgPSAiUGVhayBvcHRpbWlzbSDigJQgbWFya2V0IHJ1bm5pbmcgaG90IgoKICAgIHN0Lm1hcmtkb3duKGYiIiIKICAgIDxkaXYgc3R5bGU9J2JhY2tncm91bmQ6e2dyYWR9O2JvcmRlcjoxcHggc29saWQge2FjY2VudH0yMjtib3JkZXItcmFkaXVzOjI4cHg7CiAgICAgICAgICAgICAgICBwYWRkaW5nOjM2cHggMzJweCAzMHB4O21hcmdpbi1ib3R0b206MTRweDtwb3NpdGlvbjpyZWxhdGl2ZTtvdmVyZmxvdzpoaWRkZW4nPgogICAgICAgIDxkaXYgc3R5bGU9J2NvbG9yOiM1YjY0Nzg7Zm9udC1zaXplOjAuNzJyZW07bWFyZ2luLWJvdHRvbToyNHB4Jz57bm93LnN0cmZ0aW1lKCclQSwgJWQgJUIgJVknKX0gwrcgSW5kaWEgTWFya2V0czwvZGl2PgogICAgICAgIDxkaXYgc3R5bGU9J2Rpc3BsYXk6ZmxleDthbGlnbi1pdGVtczpjZW50ZXI7anVzdGlmeS1jb250ZW50OnNwYWNlLWJldHdlZW4nPgogICAgICAgICAgICA8ZGl2PgogICAgICAgICAgICAgICAgPGRpdiBzdHlsZT0nZm9udC1zaXplOjQuNnJlbTtmb250LXdlaWdodDo4MDA7Y29sb3I6I2Y1ZjdmYjtsaW5lLWhlaWdodDoxO2xldHRlci1zcGFjaW5nOi0zcHgnPntmZ308c3BhbiBzdHlsZT0nZm9udC1zaXplOjEuNnJlbTtmb250LXdlaWdodDo2MDA7Y29sb3I6IzViNjQ3OCc+LzEwMDwvc3Bhbj48L2Rpdj4KICAgICAgICAgICAgICAgIDxkaXYgc3R5bGU9J2ZvbnQtc2l6ZToxLjNyZW07Zm9udC13ZWlnaHQ6NzAwO2NvbG9yOnthY2NlbnR9O21hcmdpbi10b3A6OHB4Jz57Y29uZGl0aW9ufTwvZGl2PgogICAgICAgICAgICAgICAgPGRpdiBzdHlsZT0nY29sb3I6IzhhOTNhODtmb250LXNpemU6MC44MnJlbTttYXJnaW4tdG9wOjRweCc+e3N1Yn08L2Rpdj4KICAgICAgICAgICAgPC9kaXY+CiAgICAgICAgICAgIDxkaXYgc3R5bGU9J2ZvbnQtc2l6ZTo1cmVtO2xpbmUtaGVpZ2h0OjEnPntlbW9qaX08L2Rpdj4KICAgICAgICA8L2Rpdj4KICAgICAgICA8ZGl2IHN0eWxlPSdkaXNwbGF5OmZsZXg7Z2FwOjI0cHg7bWFyZ2luLXRvcDoyOHB4O3BhZGRpbmctdG9wOjIwcHg7Ym9yZGVyLXRvcDoxcHggc29saWQgI2ZmZmZmZjBkJz4KICAgICAgICAgICAgPGRpdj48ZGl2IHN0eWxlPSdjb2xvcjojNWI2NDc4O2ZvbnQtc2l6ZTowLjY1cmVtO2ZvbnQtd2VpZ2h0OjYwMDtsZXR0ZXItc3BhY2luZzoxcHgnPk5JRlRZPC9kaXY+CiAgICAgICAgICAgICAgICA8ZGl2IHN0eWxlPSdjb2xvcjp7IiNmZjdhN2EiIGlmIG5wXzwwIGVsc2UgIiM1ZGZmYTAifTtmb250LXdlaWdodDo3MDA7Zm9udC1zaXplOjAuOTVyZW07bWFyZ2luLXRvcDoycHgnPntuaWZ0eTosLjBmfSA8c3BhbiBzdHlsZT0nZm9udC1zaXplOjAuNzhyZW0nPnsnKycgaWYgbnBfPj0wIGVsc2UgJyd9e25wX30lPC9zcGFuPjwvZGl2PjwvZGl2PgogICAgICAgICAgICA8ZGl2PjxkaXYgc3R5bGU9J2NvbG9yOiM1YjY0Nzg7Zm9udC1zaXplOjAuNjVyZW07Zm9udC13ZWlnaHQ6NjAwO2xldHRlci1zcGFjaW5nOjFweCc+VklYPC9kaXY+CiAgICAgICAgICAgICAgICA8ZGl2IHN0eWxlPSdjb2xvcjp7IiNmZjdhN2EiIGlmIHZpeD4xOCBlbHNlICIjZmZjMjVkIiBpZiB2aXg+MTUgZWxzZSAiIzVkZmZhMCJ9O2ZvbnQtd2VpZ2h0OjcwMDtmb250LXNpemU6MC45NXJlbTttYXJnaW4tdG9wOjJweCc+e3ZpeH0gPHNwYW4gc3R5bGU9J2ZvbnQtc2l6ZTowLjc4cmVtJz57JysnIGlmIHZwXz49MCBlbHNlICcnfXt2cF99JTwvc3Bhbj48L2Rpdj48L2Rpdj4KICAgICAgICAgICAgPGRpdj48ZGl2IHN0eWxlPSdjb2xvcjojNWI2NDc4O2ZvbnQtc2l6ZTowLjY1cmVtO2ZvbnQtd2VpZ2h0OjYwMDtsZXR0ZXItc3BhY2luZzoxcHgnPkJFQVIgU0NPUkU8L2Rpdj4KICAgICAgICAgICAgICAgIDxkaXYgc3R5bGU9J2NvbG9yOnsiI2ZmN2E3YSIgaWYgYnM+PTY1IGVsc2UgIiNmZmMyNWQiIGlmIGJzPj00MCBlbHNlICIjNWRmZmEwIn07Zm9udC13ZWlnaHQ6NzAwO2ZvbnQtc2l6ZTowLjk1cmVtO21hcmdpbi10b3A6MnB4Jz57YnN9IDxzcGFuIHN0eWxlPSdmb250LXNpemU6MC43OHJlbSc+e2J6fTwvc3Bhbj48L2Rpdj48L2Rpdj4KICAgICAgICAgICAgPGRpdj48ZGl2IHN0eWxlPSdjb2xvcjojNWI2NDc4O2ZvbnQtc2l6ZTowLjY1cmVtO2ZvbnQtd2VpZ2h0OjYwMDtsZXR0ZXItc3BhY2luZzoxcHgnPkJSRUFEVEg8L2Rpdj4KICAgICAgICAgICAgICAgIDxkaXYgc3R5bGU9J2NvbG9yOnsiI2ZmN2E3YSIgaWYgYWQ8MC44IGVsc2UgIiM1ZGZmYTAifTtmb250LXdlaWdodDo3MDA7Zm9udC1zaXplOjAuOTVyZW07bWFyZ2luLXRvcDoycHgnPnthZH08L2Rpdj48L2Rpdj4KICAgICAgICA8L2Rpdj4KICAgIDwvZGl2PgogICAgIiIiLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQoKICAgICMg4pSA4pSAIDIuIFdIQVQgQ0hBTkdFRCBTSU5DRSBZRVNURVJEQVkg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICB5ZXN0ID0gZ2V0X3llc3RlcmRheV9yZXBvcnQoKQogICAgaWYgeWVzdDoKICAgICAgICB5ZCA9IHllc3QuZ2V0KCJkYXRhIiwge30pCiAgICAgICAgY2hhbmdlcyA9IFtdCiAgICAgICAgeV9mZyA9IHlkLmdldCgiZmVhcl9ncmVlZCIsIGZnKQogICAgICAgIHlfYnMgPSB5ZC5nZXQoImJlYXJfc2NvcmUiLCBicykKICAgICAgICB5X3ZpeCA9IHlkLmdldCgidml4Iiwgdml4KQogICAgICAgIHlfYWQgPSB5ZC5nZXQoImFkX3JhdGlvIiwgYWQpCiAgICAgICAgaWYgYWJzKGZnIC0geV9mZykgPj0gMToKICAgICAgICAgICAgYXJyb3cgPSAi4oaRIiBpZiBmZyA+IHlfZmcgZWxzZSAi4oaTIgogICAgICAgICAgICBjbHIgPSAiIzVkZmZhMCIgaWYgZmcgPiB5X2ZnIGVsc2UgIiNmZjdhN2EiCiAgICAgICAgICAgIGNoYW5nZXMuYXBwZW5kKCgiU2VudGltZW50IiwgZiJ7eV9mZ30g4oaSIHtmZ30iLCBhcnJvdywgY2xyKSkKICAgICAgICBpZiBhYnMoYnMgLSB5X2JzKSA+PSAxOgogICAgICAgICAgICBhcnJvdyA9ICLihpEiIGlmIGJzID4geV9icyBlbHNlICLihpMiCiAgICAgICAgICAgIGNsciA9ICIjZmY3YTdhIiBpZiBicyA+IHlfYnMgZWxzZSAiIzVkZmZhMCIKICAgICAgICAgICAgY2hhbmdlcy5hcHBlbmQoKCJCZWFyIFNjb3JlIiwgZiJ7eV9ic30g4oaSIHtic30iLCBhcnJvdywgY2xyKSkKICAgICAgICBpZiBhYnModml4IC0geV92aXgpID49IDAuMjoKICAgICAgICAgICAgYXJyb3cgPSAi4oaRIiBpZiB2aXggPiB5X3ZpeCBlbHNlICLihpMiCiAgICAgICAgICAgIGNsciA9ICIjZmY3YTdhIiBpZiB2aXggPiB5X3ZpeCBlbHNlICIjNWRmZmEwIgogICAgICAgICAgICBjaGFuZ2VzLmFwcGVuZCgoIlZvbGF0aWxpdHkiLCBmInt5X3ZpeH0g4oaSIHt2aXh9IiwgYXJyb3csIGNscikpCiAgICAgICAgaWYgYWJzKGFkIC0geV9hZCkgPj0gMC4xOgogICAgICAgICAgICBhcnJvdyA9ICLihpEiIGlmIGFkID4geV9hZCBlbHNlICLihpMiCiAgICAgICAgICAgIGNsciA9ICIjNWRmZmEwIiBpZiBhZCA+IHlfYWQgZWxzZSAiI2ZmN2E3YSIKICAgICAgICAgICAgY2hhbmdlcy5hcHBlbmQoKCJCcmVhZHRoIiwgZiJ7eV9hZH0g4oaSIHthZH0iLCBhcnJvdywgY2xyKSkKCiAgICAgICAgc3QubWFya2Rvd24oIjxkaXYgY2xhc3M9J3NlY3Rpb24tdGl0bGUnPldoYXQgY2hhbmdlZCBzaW5jZSB5ZXN0ZXJkYXk8L2Rpdj4iLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQogICAgICAgIGlmIGNoYW5nZXM6CiAgICAgICAgICAgIGNoaXBzID0gIiIKICAgICAgICAgICAgZm9yIG5hbWUsIHZhbCwgYXJyb3csIGNsciBpbiBjaGFuZ2VzOgogICAgICAgICAgICAgICAgY2hpcHMgKz0gZiIiIjxkaXYgc3R5bGU9J2JhY2tncm91bmQ6IzEyMTYxZjtib3JkZXI6MXB4IHNvbGlkICMxZjI1MzM7Ym9yZGVyLXJhZGl1czoxNnB4OwogICAgICAgICAgICAgICAgICAgIHBhZGRpbmc6MTRweCAxNnB4O2ZsZXg6MTttaW4td2lkdGg6MTQwcHgnPgogICAgICAgICAgICAgICAgICAgIDxkaXYgc3R5bGU9J2NvbG9yOiM1YjY0Nzg7Zm9udC1zaXplOjAuNjhyZW07Zm9udC13ZWlnaHQ6NjAwJz57bmFtZX08L2Rpdj4KICAgICAgICAgICAgICAgICAgICA8ZGl2IHN0eWxlPSdkaXNwbGF5OmZsZXg7YWxpZ24taXRlbXM6Y2VudGVyO2dhcDo2cHg7bWFyZ2luLXRvcDo2cHgnPgogICAgICAgICAgICAgICAgICAgICAgICA8c3BhbiBzdHlsZT0nY29sb3I6I2U3ZWFmMDtmb250LXdlaWdodDo3MDA7Zm9udC1zaXplOjAuOXJlbSc+e3ZhbH08L3NwYW4+CiAgICAgICAgICAgICAgICAgICAgICAgIDxzcGFuIHN0eWxlPSdjb2xvcjp7Y2xyfTtmb250LXdlaWdodDo4MDA7Zm9udC1zaXplOjFyZW0nPnthcnJvd308L3NwYW4+CiAgICAgICAgICAgICAgICAgICAgPC9kaXY+PC9kaXY+IiIiCiAgICAgICAgICAgIHN0Lm1hcmtkb3duKGYiPGRpdiBzdHlsZT0nZGlzcGxheTpmbGV4O2dhcDoxMHB4O2ZsZXgtd3JhcDp3cmFwJz57Y2hpcHN9PC9kaXY+IiwgdW5zYWZlX2FsbG93X2h0bWw9VHJ1ZSkKICAgICAgICBlbHNlOgogICAgICAgICAgICBzdC5tYXJrZG93bigiPGRpdiBzdHlsZT0nYmFja2dyb3VuZDojMTIxNjFmO2JvcmRlcjoxcHggc29saWQgIzFmMjUzMztib3JkZXItcmFkaXVzOjE2cHg7cGFkZGluZzoxNnB4O2NvbG9yOiM4YTkzYTg7Zm9udC1zaXplOjAuODVyZW0nPk1hcmtldCBjb25kaXRpb25zIHN0ZWFkeSDigJQgbm8gc2lnbmlmaWNhbnQgY2hhbmdlcyBmcm9tIHllc3RlcmRheS48L2Rpdj4iLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQoKICAgICMg4pSA4pSAIDMuIEJFQVJJUSBBSSBNT1JOSU5HIEJSSUVGIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgcmVwb3J0cyA9IGxvYWRfd2VhdGhlcl9yZXBvcnRzKCkKICAgIHRvZGF5X3JlcG9ydHMgPSBbciBmb3IgciBpbiByZXBvcnRzIGlmIHIuZ2V0KCJkYXRlIikgPT0gdG9kYXldCiAgICBsYXRlc3QgPSB0b2RheV9yZXBvcnRzWy0xXSBpZiB0b2RheV9yZXBvcnRzIGVsc2UgTm9uZQogICAgYWlfdGV4dCA9IGxhdGVzdC5nZXQoImFpX3N1bW1hcnkiLCAiIikgaWYgbGF0ZXN0IGVsc2UgIiIKCiAgICBzdC5tYXJrZG93bigiPGRpdiBjbGFzcz0nc2VjdGlvbi10aXRsZSc+QmVhcklRIG1vcm5pbmcgYnJpZWY8L2Rpdj4iLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQogICAgaWYgYWlfdGV4dDoKICAgICAgICBzdC5tYXJrZG93bihmIiIiCiAgICAgICAgPGRpdiBzdHlsZT0nYmFja2dyb3VuZDpsaW5lYXItZ3JhZGllbnQoMTQ1ZGVnLCMxMDE0MWYgMCUsIzBkMTAxOSAxMDAlKTsKICAgICAgICAgICAgICAgICAgICBib3JkZXI6MXB4IHNvbGlkICMxZjI1MzM7Ym9yZGVyLXJhZGl1czoyMHB4O3BhZGRpbmc6MjJweCAyNHB4Jz4KICAgICAgICAgICAgPGRpdiBzdHlsZT0nZGlzcGxheTpmbGV4O2FsaWduLWl0ZW1zOmNlbnRlcjtnYXA6OHB4O21hcmdpbi1ib3R0b206MTJweCc+CiAgICAgICAgICAgICAgICA8ZGl2IHN0eWxlPSd3aWR0aDo4cHg7aGVpZ2h0OjhweDtiYWNrZ3JvdW5kOiM3ZGE0ZmY7Ym9yZGVyLXJhZGl1czo1MCUnPjwvZGl2PgogICAgICAgICAgICAgICAgPHNwYW4gc3R5bGU9J2NvbG9yOiM3ZGE0ZmY7Zm9udC1zaXplOjAuN3JlbTtmb250LXdlaWdodDo3MDA7bGV0dGVyLXNwYWNpbmc6MS41cHgnPkFJIElOVEVMTElHRU5DRTwvc3Bhbj4KICAgICAgICAgICAgPC9kaXY+CiAgICAgICAgICAgIDxkaXYgc3R5bGU9J2NvbG9yOiNkM2Q5ZTU7Zm9udC1zaXplOjAuOTJyZW07bGluZS1oZWlnaHQ6MS43NSc+e2FpX3RleHR9PC9kaXY+CiAgICAgICAgPC9kaXY+IiIiLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQogICAgZWxzZToKICAgICAgICBzdC5tYXJrZG93bigiPGRpdiBzdHlsZT0nYmFja2dyb3VuZDojMTIxNjFmO2JvcmRlcjoxcHggc29saWQgIzFmMjUzMztib3JkZXItcmFkaXVzOjE2cHg7cGFkZGluZzoxOHB4O2NvbG9yOiM4YTkzYTg7Zm9udC1zaXplOjAuODVyZW0nPk1vcm5pbmcgYnJpZWYgZ2VuZXJhdGVzIGF1dG9tYXRpY2FsbHkgYXQgODo0NSBBTSBvbiBtYXJrZXQgZGF5cy4gVmlzaXQgV2VhdGhlciBSZXBvcnRzIHRvIGdlbmVyYXRlIG5vdy48L2Rpdj4iLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQoKICAgICMg4pSA4pSAIDUuIElNUE9SVEFOVCBIRUFETElORVMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICBzdC5tYXJrZG93bigiPGRpdiBjbGFzcz0nc2VjdGlvbi10aXRsZSc+SW1wb3J0YW50IGhlYWRsaW5lczwvZGl2PiIsIHVuc2FmZV9hbGxvd19odG1sPVRydWUpCiAgICB0cnk6CiAgICAgICAgbmV3cyA9IGZldGNoX21hcmtldF9uZXdzKDUpCiAgICBleGNlcHQ6IG5ld3MgPSBbXQogICAgaWYgbmV3czoKICAgICAgICBuZXdzX2h0bWwgPSAiPGRpdiBzdHlsZT0nYmFja2dyb3VuZDojMTIxNjFmO2JvcmRlcjoxcHggc29saWQgIzFmMjUzMztib3JkZXItcmFkaXVzOjIwcHg7cGFkZGluZzo4cHggMjBweCc+IgogICAgICAgIGZvciBpLCBuIGluIGVudW1lcmF0ZShuZXdzKToKICAgICAgICAgICAgYm9yZGVyID0gImJvcmRlci1ib3R0b206MXB4IHNvbGlkICMxYTFmMmU7IiBpZiBpIDwgbGVuKG5ld3MpLTEgZWxzZSAiIgogICAgICAgICAgICBsaW5rID0gbi5nZXQoImxpbmsiLCIiKQogICAgICAgICAgICB0aXRsZSA9IG4uZ2V0KCJ0aXRsZSIsIiIpCiAgICAgICAgICAgIHNvdXJjZSA9IG4uZ2V0KCJzb3VyY2UiLCIiKQogICAgICAgICAgICBpZiBsaW5rOgogICAgICAgICAgICAgICAgbmV3c19odG1sICs9IGYiIiI8ZGl2IHN0eWxlPSdwYWRkaW5nOjE0cHggMDt7Ym9yZGVyfSc+CiAgICAgICAgICAgICAgICAgICAgPGEgaHJlZj0ne2xpbmt9JyB0YXJnZXQ9J19ibGFuaycgc3R5bGU9J2NvbG9yOiNkM2Q5ZTU7Zm9udC1zaXplOjAuODhyZW07dGV4dC1kZWNvcmF0aW9uOm5vbmU7bGluZS1oZWlnaHQ6MS41O2ZvbnQtd2VpZ2h0OjUwMCc+e3RpdGxlfTwvYT4KICAgICAgICAgICAgICAgICAgICA8ZGl2IHN0eWxlPSdjb2xvcjojNWI2NDc4O2ZvbnQtc2l6ZTowLjdyZW07bWFyZ2luLXRvcDozcHgnPntzb3VyY2V9PC9kaXY+PC9kaXY+IiIiCiAgICAgICAgICAgIGVsc2U6CiAgICAgICAgICAgICAgICBuZXdzX2h0bWwgKz0gZiIiIjxkaXYgc3R5bGU9J3BhZGRpbmc6MTRweCAwO3tib3JkZXJ9Jz4KICAgICAgICAgICAgICAgICAgICA8c3BhbiBzdHlsZT0nY29sb3I6I2QzZDllNTtmb250LXNpemU6MC44OHJlbTtsaW5lLWhlaWdodDoxLjU7Zm9udC13ZWlnaHQ6NTAwJz57dGl0bGV9PC9zcGFuPgogICAgICAgICAgICAgICAgICAgIDxkaXYgc3R5bGU9J2NvbG9yOiM1YjY0Nzg7Zm9udC1zaXplOjAuN3JlbTttYXJnaW4tdG9wOjNweCc+e3NvdXJjZX08L2Rpdj48L2Rpdj4iIiIKICAgICAgICBuZXdzX2h0bWwgKz0gIjwvZGl2PiIKICAgICAgICBzdC5tYXJrZG93bihuZXdzX2h0bWwsIHVuc2FmZV9hbGxvd19odG1sPVRydWUpCiAgICBlbHNlOgogICAgICAgIHN0Lm1hcmtkb3duKCI8ZGl2IHN0eWxlPSdiYWNrZ3JvdW5kOiMxMjE2MWY7Ym9yZGVyOjFweCBzb2xpZCAjMWYyNTMzO2JvcmRlci1yYWRpdXM6MTZweDtwYWRkaW5nOjE2cHg7Y29sb3I6IzhhOTNhODtmb250LXNpemU6MC44NXJlbSc+SGVhZGxpbmVzIGxvYWRpbmfigKY8L2Rpdj4iLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQoKICAgICMg4pSA4pSAIDYuIFFVSUNLIEFDQ0VTUyBUTyBTSUdOQUxTIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgc3QubWFya2Rvd24oIjxkaXYgY2xhc3M9J3NlY3Rpb24tdGl0bGUnPkludGVsbGlnZW5jZSBlbmdpbmVzPC9kaXY+IiwgdW5zYWZlX2FsbG93X2h0bWw9VHJ1ZSkKICAgIGVuZ2luZXMgPSBbCiAgICAgICAgKCLwn4yh77iPIiwiRmVhci1HcmVlZCBJbmRleCIsIkxpdmUgc2VudGltZW50IGdhdWdlIiwiI2ZmOGM1ZCIpLAogICAgICAgICgi8J+OryIsIk1hcmtldCBSZWdpbWUiLCJTdHJ1Y3R1cmUgZGV0ZWN0aW9uIiwiI2IwN2RmZiIpLAogICAgICAgICgi4pqg77iPIiwiRWFybHkgV2FybmluZyIsIkJlYXIgU2NvcmUgbW9uaXRvciIsIiNmZjdhN2EiKSwKICAgICAgICAoIvCfk4oiLCJNYXJrZXQgQnJlYWR0aCIsIkEvRCBwYXJ0aWNpcGF0aW9uIiwiIzdkYTRmZiIpLAogICAgXQogICAgZW5nX2h0bWwgPSAiPGRpdiBzdHlsZT0nZGlzcGxheTpncmlkO2dyaWQtdGVtcGxhdGUtY29sdW1uczoxZnIgMWZyO2dhcDoxMHB4Jz4iCiAgICBmb3IgaWNvbiwgbmFtZSwgZGVzYywgY2xyIGluIGVuZ2luZXM6CiAgICAgICAgZW5nX2h0bWwgKz0gZiIiIjxkaXYgc3R5bGU9J2JhY2tncm91bmQ6IzEyMTYxZjtib3JkZXI6MXB4IHNvbGlkICMxZjI1MzM7Ym9yZGVyLXJhZGl1czoxOHB4OwogICAgICAgICAgICBwYWRkaW5nOjE4cHg7dHJhbnNpdGlvbjphbGwgMC4ycyc+CiAgICAgICAgICAgIDxkaXYgc3R5bGU9J2ZvbnQtc2l6ZToxLjZyZW07bWFyZ2luLWJvdHRvbTo4cHgnPntpY29ufTwvZGl2PgogICAgICAgICAgICA8ZGl2IHN0eWxlPSdjb2xvcjojZTdlYWYwO2ZvbnQtd2VpZ2h0OjcwMDtmb250LXNpemU6MC44OHJlbSc+e25hbWV9PC9kaXY+CiAgICAgICAgICAgIDxkaXYgc3R5bGU9J2NvbG9yOiM1YjY0Nzg7Zm9udC1zaXplOjAuNzJyZW07bWFyZ2luLXRvcDoycHgnPntkZXNjfTwvZGl2PgogICAgICAgICAgICA8ZGl2IHN0eWxlPSdjb2xvcjp7Y2xyfTtmb250LXNpemU6MC43cmVtO2ZvbnQtd2VpZ2h0OjYwMDttYXJnaW4tdG9wOjEwcHgnPk9wZW4gZnJvbSBzaWRlYmFyIOKGkjwvZGl2PgogICAgICAgIDwvZGl2PiIiIgogICAgZW5nX2h0bWwgKz0gIjwvZGl2PiIKICAgIHN0Lm1hcmtkb3duKGVuZ19odG1sLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQoKICAgICMgRm9vdGVyCiAgICBzdC5tYXJrZG93bihmIiIiPGRpdiBzdHlsZT0ndGV4dC1hbGlnbjpjZW50ZXI7Y29sb3I6IzNkNDQ1Njtmb250LXNpemU6MC42OHJlbTsKICAgICAgICBtYXJnaW4tdG9wOjMycHg7cGFkZGluZy10b3A6MTZweDtib3JkZXItdG9wOjFweCBzb2xpZCAjMTQxODFmJz4KICAgICAgICBCZWFySVEgTWFya2V0IFdlYXRoZXIgSW50ZWxsaWdlbmNlIMK3IGJlYXJpcS5pbjxicj5Gb3IgZWR1Y2F0aW9uYWwgcHVycG9zZXMgb25seTwvZGl2PiIiIiwKICAgICAgICB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQoKIyDilIDilIAgT1RIRVIgUEFHRVMgKHVuY2hhbmdlZCkg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACmVsaWYgIkZlYXItR3JlZWQiIGluIHBhZ2U6CiAgICB0cmFjayh1c2VybmFtZSwgImZlYXJfZ3JlZWQiKQogICAgdHJ5OgogICAgICAgIGV4ZWMob3Blbihvcy5wYXRoLmpvaW4ob3MucGF0aC5kaXJuYW1lKF9fZmlsZV9fKSwiYmVhcmlxX2ZlYXJncmVlZC5weSIpLGVuY29kaW5nPSJ1dGYtOCIpLnJlYWQoKSkKICAgIGV4Y2VwdCBFeGNlcHRpb24gYXMgZToKICAgICAgICBzdC5lcnJvcihmIkZlYXItR3JlZWQgbW9kdWxlIGVycm9yOiB7ZX0iKQoKZWxpZiAiUmVnaW1lIiBpbiBwYWdlOgogICAgdHJhY2sodXNlcm5hbWUsICJyZWdpbWUiKQogICAgdHJ5OgogICAgICAgIGV4ZWMob3Blbihvcy5wYXRoLmpvaW4ob3MucGF0aC5kaXJuYW1lKF9fZmlsZV9fKSwiYmVhcmlxX3JlZ2ltZS5weSIpLGVuY29kaW5nPSJ1dGYtOCIpLnJlYWQoKSkKICAgIGV4Y2VwdCBFeGNlcHRpb24gYXMgZToKICAgICAgICBzdC5lcnJvcihmIlJlZ2ltZSBtb2R1bGUgZXJyb3I6IHtlfSIpCgplbGlmICJFYXJseSBXYXJuaW5nIiBpbiBwYWdlOgogICAgdHJhY2sodXNlcm5hbWUsICJlYXJseV93YXJuaW5nIikKICAgIHRyeToKICAgICAgICBleGVjKG9wZW4ob3MucGF0aC5qb2luKG9zLnBhdGguZGlybmFtZShfX2ZpbGVfXyksImJlYXJpcV9lYXJseV93YXJuaW5nLnB5IiksZW5jb2Rpbmc9InV0Zi04IikucmVhZCgpKQogICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOgogICAgICAgIHN0LmVycm9yKGYiRWFybHkgV2FybmluZyBtb2R1bGUgZXJyb3I6IHtlfSIpCgplbGlmICJCcmVhZHRoIiBpbiBwYWdlOgogICAgdHJhY2sodXNlcm5hbWUsICJicmVhZHRoIikKICAgIHRyeToKICAgICAgICBleGVjKG9wZW4ob3MucGF0aC5qb2luKG9zLnBhdGguZGlybmFtZShfX2ZpbGVfXyksImJlYXJpcV9icmVhZHRoLnB5IiksZW5jb2Rpbmc9InV0Zi04IikucmVhZCgpKQogICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOgogICAgICAgIHN0LmVycm9yKGYiQnJlYWR0aCBtb2R1bGUgZXJyb3I6IHtlfSIpCgplbGlmICJXZWF0aGVyIiBpbiBwYWdlOgogICAgdHJhY2sodXNlcm5hbWUsICJ3ZWF0aGVyIikKICAgIHJlbmRlcl93ZWF0aGVyX3BhZ2UodXNlcm5hbWUpCgplbGlmICJBbmFseXRpY3MiIGluIHBhZ2UgYW5kIGFkbWluOgogICAgdHJhY2sodXNlcm5hbWUsICJhZG1pbiIpCiAgICByZW5kZXJfYW5hbHl0aWNzX3BhZ2UoKQoKZWxpZiAiVXNlcnMiIGluIHBhZ2UgYW5kIGFkbWluOgogICAgdHJhY2sodXNlcm5hbWUsICJhZG1pbiIpCiAgICByZW5kZXJfYWRtaW5fdXNlcnMoKQo="
-with open("beariq_app.py","wb") as f: f.write(base64.b64decode(code))
-print("Fixed! Greeting + time removed!")
+"""
+BearIQ Market Weather Intelligence
+Premium Dashboard — Apple Weather x CRED x TradingView
+"""
+import streamlit as st
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+st.set_page_config(
+    page_title="BearIQ — Market Weather Intelligence",
+    page_icon="🐻",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
+from beariq_auth import (is_logged_in, get_current_user, is_admin,
+                          render_login, render_navbar, render_admin_users, logout)
+from beariq_analytics import track, render_analytics_page
+from beariq_weather import (render_weather_page, load_weather_reports,
+                             fetch_india_data, fetch_global_data, fetch_sector_data,
+                             calculate_scores, calculate_confidence, get_weather,
+                             fetch_market_news)
+
+import yfinance as yf
+import requests
+from datetime import datetime, timedelta
+
+# ── PREMIUM DESIGN SYSTEM ─────────────────────────────────────────
+st.markdown("""<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+html,body,[class*="css"]{font-family:'Inter',-apple-system,sans-serif!important}
+.stApp{background:#07090f;color:#e7eaf0}
+[data-testid="stSidebar"]{background-color:#0a0d15;border-right:1px solid #1a1f2e}
+[data-testid="stHeader"]{background:transparent}
+.block-container{padding-top:0.5rem;max-width:680px!important;margin:0 auto;padding-left:12px!important;padding-right:12px!important}
+@media(max-width:768px){
+    .block-container{padding-left:8px!important;padding-right:8px!important;padding-top:0.25rem!important}
+    .stApp{font-size:14px}
+    [data-testid="stSidebar"]{width:80vw!important}
+    .section-title{margin:18px 0 10px 2px!important}
+}
+.section-title{font-size:0.72rem;font-weight:700;color:#5b6478;text-transform:uppercase;
+    letter-spacing:2px;margin:28px 0 12px 4px}
+.stButton>button{background:#161b28;color:#aab4cc;border:1px solid #232a3d;
+    border-radius:14px;font-weight:600;padding:12px;transition:all 0.2s;width:100%}
+.stButton>button:hover{background:#1d2436;border-color:#2f3850}
+[data-testid="collapsedControl"]{display:block!important;visibility:visible!important;color:#f87171!important}
+h1,h2,h3{color:#f1f5f9!important}
+hr{border-color:#1a1f2e!important}
+#MainMenu{visibility:hidden!important}
+footer{display:none!important;visibility:hidden!important;height:0!important;overflow:hidden!important}
+.stDeployButton{display:none!important}
+[data-testid="stDecoration"]{display:none!important}
+[data-testid="stFooter"]{display:none!important}
+[class*="viewerBadge"]{display:none!important;visibility:hidden!important}
+[class*="StatusWidget"]{display:none!important}
+[class*="createdBy"]{display:none!important}
+iframe[title*="streamlit"]{display:none!important}
+div[class*="badge"]{display:none!important}
+.streamlit-footer{display:none!important}
+div:has(> a[href*="streamlit.io"]){display:none!important;height:0!important}
+div:has(> [class*="viewerBadge"]){display:none!important;height:0!important}
+[data-testid="collapsedControl"]{display:block!important;visibility:visible!important;color:#f87171!important}
+</style>""", unsafe_allow_html=True)
+
+# ── AUTO REPORT TRIGGER (for cron service) ─────────────────────────
+from beariq_weather import generate_weather_report, send_email_report
+_params = st.query_params
+if _params.get("action") == "generate" and _params.get("key") == "beariq_morning_2026":
+    _today = datetime.now().strftime("%d %b %Y")
+    _now = datetime.now()
+    _reports = load_weather_reports()
+    _has_today = any(r.get("date") == _today and r.get("type") == "morning_outlook" for r in _reports)
+    if not _has_today and _now.weekday() < 5 and _now.hour >= 6:
+        try:
+            _report = generate_weather_report()
+            _sent, _msg = send_email_report(_report)
+            st.markdown(f"<div style='background:#12161f;padding:20px;border-radius:12px;text-align:center'>"
+                       f"<div style='color:#5dffa0;font-weight:700;font-size:1.2rem'>BearIQ Morning Outlook Generated</div>"
+                       f"<div style='color:#94a3b8;margin-top:8px'>Report: {_today}</div>"
+                       f"<div style='color:#94a3b8'>Email: {_msg}</div></div>", unsafe_allow_html=True)
+        except Exception as e:
+            st.markdown(f"<div style='color:#ff7a7a'>Error: {e}</div>", unsafe_allow_html=True)
+    elif _has_today:
+        st.markdown("<div style='background:#12161f;padding:20px;border-radius:12px;text-align:center;color:#94a3b8'>Today's report already generated.</div>", unsafe_allow_html=True)
+    else:
+        st.markdown("<div style='background:#12161f;padding:20px;border-radius:12px;text-align:center;color:#94a3b8'>Not a market day or too early.</div>", unsafe_allow_html=True)
+    st.stop()
+
+# ── AUTH GATE ─────────────────────────────────────────────────────
+if not is_logged_in():
+    render_login()
+    st.stop()
+
+username = get_current_user()
+admin = is_admin()
+now = datetime.now()
+today = now.strftime("%d %b %Y")
+
+# ── SIDEBAR NAV ───────────────────────────────────────────────────
+render_navbar()
+with st.sidebar:
+    st.markdown("<div style='font-size:0.68rem;color:#5b6478;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px'>NAVIGATION</div>", unsafe_allow_html=True)
+    pages = ["🏠 Home", "🌡️ Fear-Greed", "🎯 Market Regime",
+             "⚠️ Early Warning", "📊 Market Breadth", "🌤️ Weather Reports"]
+    if admin:
+        pages += ["📈 Analytics", "👤 Users"]
+    page = st.radio("", pages, label_visibility="collapsed")
+
+# ── DATA HELPERS ──────────────────────────────────────────────────
+def get_yesterday_report():
+    """Get last report from a previous day for comparison"""
+    reports = load_weather_reports()
+    prev = [r for r in reports if r.get("date") != today]
+    return prev[-1] if prev else None
+
+# ════════════════════════════════════════════════════════════════
+# HOME — PREMIUM DASHBOARD
+# ════════════════════════════════════════════════════════════════
+if "Home" in page:
+    track(username, "home")
+
+    with st.spinner(""):
+        d = fetch_india_data()
+        g = fetch_global_data()
+        scores = calculate_scores(d, g)
+        sectors = fetch_sector_data()
+        confidence = calculate_confidence(scores, d, g, sectors)
+
+    fg = scores.get("fear_greed", 50)
+    fg_label = scores.get("fg_label", "NEUTRAL")
+    bs = scores.get("bear_score", 0)
+    bz = scores.get("bear_zone", "CALM")
+    nifty = d.get("nifty", 0)
+    np_ = d.get("nifty_pct", 0)
+    vix = d.get("vix", 15)
+    vp_ = d.get("vix_pct", 0)
+    ad = d.get("ad_ratio", 1.0)
+    bn = d.get("banknifty", 0)
+    bnp = d.get("banknifty_pct", 0)
+
+    # ── 1. HERO CARD — Apple Weather Style ──────────────────────
+    # Gradient + emoji by condition
+    if fg <= 20:
+        grad = "linear-gradient(160deg,#2d1115 0%,#1a0a0d 60%,#0a0608 100%)"
+        accent = "#ff5d5d"; emoji = "⛈️"; condition = "Extreme Fear"
+        sub = "Heavy selling pressure across the market"
+    elif fg <= 35:
+        grad = "linear-gradient(160deg,#2b1a10 0%,#1a100a 60%,#0a0705 100%)"
+        accent = "#ff8c5d"; emoji = "🌧️"; condition = "Fear"
+        sub = "Caution in the air — fear building"
+    elif fg <= 50:
+        grad = "linear-gradient(160deg,#252017 0%,#16130d 60%,#0a0906 100%)"
+        accent = "#ffc25d"; emoji = "🌦️"; condition = "Mild Fear"
+        sub = "Mixed skies — slight unease in the market"
+    elif fg <= 65:
+        grad = "linear-gradient(160deg,#141a26 0%,#0d1118 60%,#070a0f 100%)"
+        accent = "#7da4ff"; emoji = "⛅"; condition = "Neutral"
+        sub = "Calm conditions — market in balance"
+    elif fg <= 80:
+        grad = "linear-gradient(160deg,#10241a 0%,#0a1710 60%,#060d09 100%)"
+        accent = "#5dff9f"; emoji = "🌤️"; condition = "Greed"
+        sub = "Optimism rising — confidence in the market"
+    else:
+        grad = "linear-gradient(160deg,#0d2a1c 0%,#081a11 60%,#050f0a 100%)"
+        accent = "#3dffa0"; emoji = "☀️"; condition = "Extreme Greed"
+        sub = "Peak optimism — market running hot"
+
+    st.markdown(f"""
+    <div style='background:{grad};border:1px solid {accent}22;border-radius:28px;
+                padding:36px 32px 30px;margin-bottom:14px;position:relative;overflow:hidden'>
+        <div style='color:#5b6478;font-size:0.72rem;margin-bottom:24px'>{now.strftime('%A, %d %B %Y')} · India Markets</div>
+        <div style='display:flex;align-items:center;justify-content:space-between'>
+            <div>
+                <div style='font-size:4.6rem;font-weight:800;color:#f5f7fb;line-height:1;letter-spacing:-3px'>{fg}<span style='font-size:1.6rem;font-weight:600;color:#5b6478'>/100</span></div>
+                <div style='font-size:1.3rem;font-weight:700;color:{accent};margin-top:8px'>{condition}</div>
+                <div style='color:#8a93a8;font-size:0.82rem;margin-top:4px'>{sub}</div>
+            </div>
+            <div style='font-size:5rem;line-height:1'>{emoji}</div>
+        </div>
+        <div style='display:flex;gap:14px;flex-wrap:wrap;margin-top:28px;padding-top:20px;border-top:1px solid #ffffff0d'>
+            <div><div style='color:#5b6478;font-size:0.65rem;font-weight:600;letter-spacing:1px'>NIFTY</div>
+                <div style='color:{"#ff7a7a" if np_<0 else "#5dffa0"};font-weight:700;font-size:0.95rem;margin-top:2px'>{nifty:,.0f} <span style='font-size:0.78rem'>{'+' if np_>=0 else ''}{np_}%</span></div></div>
+            <div><div style='color:#5b6478;font-size:0.65rem;font-weight:600;letter-spacing:1px'>VIX</div>
+                <div style='color:{"#ff7a7a" if vix>18 else "#ffc25d" if vix>15 else "#5dffa0"};font-weight:700;font-size:0.95rem;margin-top:2px'>{vix} <span style='font-size:0.78rem'>{'+' if vp_>=0 else ''}{vp_}%</span></div></div>
+            <div><div style='color:#5b6478;font-size:0.65rem;font-weight:600;letter-spacing:1px'>BEAR SCORE</div>
+                <div style='color:{"#ff7a7a" if bs>=65 else "#ffc25d" if bs>=40 else "#5dffa0"};font-weight:700;font-size:0.95rem;margin-top:2px'>{bs} <span style='font-size:0.78rem'>{bz}</span></div></div>
+            <div><div style='color:#5b6478;font-size:0.65rem;font-weight:600;letter-spacing:1px'>BREADTH</div>
+                <div style='color:{"#ff7a7a" if ad<0.8 else "#5dffa0"};font-weight:700;font-size:0.95rem;margin-top:2px'>{ad}</div></div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── 2. WHAT CHANGED SINCE YESTERDAY ──────────────────────────
+    yest = get_yesterday_report()
+    if yest:
+        yd = yest.get("data", {})
+        changes = []
+        y_fg = yd.get("fear_greed", fg)
+        y_bs = yd.get("bear_score", bs)
+        y_vix = yd.get("vix", vix)
+        y_ad = yd.get("ad_ratio", ad)
+        if abs(fg - y_fg) >= 1:
+            arrow = "↑" if fg > y_fg else "↓"
+            clr = "#5dffa0" if fg > y_fg else "#ff7a7a"
+            changes.append(("Sentiment", f"{y_fg} → {fg}", arrow, clr))
+        if abs(bs - y_bs) >= 1:
+            arrow = "↑" if bs > y_bs else "↓"
+            clr = "#ff7a7a" if bs > y_bs else "#5dffa0"
+            changes.append(("Bear Score", f"{y_bs} → {bs}", arrow, clr))
+        if abs(vix - y_vix) >= 0.2:
+            arrow = "↑" if vix > y_vix else "↓"
+            clr = "#ff7a7a" if vix > y_vix else "#5dffa0"
+            changes.append(("Volatility", f"{y_vix} → {vix}", arrow, clr))
+        if abs(ad - y_ad) >= 0.1:
+            arrow = "↑" if ad > y_ad else "↓"
+            clr = "#5dffa0" if ad > y_ad else "#ff7a7a"
+            changes.append(("Breadth", f"{y_ad} → {ad}", arrow, clr))
+
+        st.markdown("<div class='section-title'>What changed since yesterday</div>", unsafe_allow_html=True)
+        if changes:
+            chips = ""
+            for name, val, arrow, clr in changes:
+                chips += f"""<div style='background:#12161f;border:1px solid #1f2533;border-radius:16px;
+                    padding:14px 16px;flex:1;min-width:140px'>
+                    <div style='color:#5b6478;font-size:0.68rem;font-weight:600'>{name}</div>
+                    <div style='display:flex;align-items:center;gap:6px;margin-top:6px'>
+                        <span style='color:#e7eaf0;font-weight:700;font-size:0.9rem'>{val}</span>
+                        <span style='color:{clr};font-weight:800;font-size:1rem'>{arrow}</span>
+                    </div></div>"""
+            st.markdown(f"<div style='display:flex;gap:10px;flex-wrap:wrap'>{chips}</div>", unsafe_allow_html=True)
+        else:
+            st.markdown("<div style='background:#12161f;border:1px solid #1f2533;border-radius:16px;padding:16px;color:#8a93a8;font-size:0.85rem'>Market conditions steady — no significant changes from yesterday.</div>", unsafe_allow_html=True)
+
+    # ── 3. BEARIQ AI MORNING BRIEF ────────────────────────────────
+    reports = load_weather_reports()
+    today_reports = [r for r in reports if r.get("date") == today]
+    latest = today_reports[-1] if today_reports else None
+    ai_text = latest.get("ai_summary", "") if latest else ""
+
+    st.markdown("<div class='section-title'>BearIQ morning brief</div>", unsafe_allow_html=True)
+    if ai_text:
+        st.markdown(f"""
+        <div style='background:linear-gradient(145deg,#10141f 0%,#0d1019 100%);
+                    border:1px solid #1f2533;border-radius:20px;padding:22px 24px'>
+            <div style='display:flex;align-items:center;gap:8px;margin-bottom:12px'>
+                <div style='width:8px;height:8px;background:#7da4ff;border-radius:50%'></div>
+                <span style='color:#7da4ff;font-size:0.7rem;font-weight:700;letter-spacing:1.5px'>AI INTELLIGENCE</span>
+            </div>
+            <div style='color:#d3d9e5;font-size:0.92rem;line-height:1.75'>{ai_text}</div>
+        </div>""", unsafe_allow_html=True)
+    else:
+        st.markdown("<div style='background:#12161f;border:1px solid #1f2533;border-radius:16px;padding:18px;color:#8a93a8;font-size:0.85rem'>Morning brief generates automatically at 8:45 AM on market days. Visit Weather Reports to generate now.</div>", unsafe_allow_html=True)
+
+    # ── 5. IMPORTANT HEADLINES ────────────────────────────────────
+    st.markdown("<div class='section-title'>Important headlines</div>", unsafe_allow_html=True)
+    try:
+        news = fetch_market_news(5)
+    except: news = []
+    if news:
+        news_html = "<div style='background:#12161f;border:1px solid #1f2533;border-radius:20px;padding:8px 20px'>"
+        for i, n in enumerate(news):
+            border = "border-bottom:1px solid #1a1f2e;" if i < len(news)-1 else ""
+            link = n.get("link","")
+            title = n.get("title","")
+            source = n.get("source","")
+            if link:
+                news_html += f"""<div style='padding:14px 0;{border}'>
+                    <a href='{link}' target='_blank' style='color:#d3d9e5;font-size:0.88rem;text-decoration:none;line-height:1.5;font-weight:500'>{title}</a>
+                    <div style='color:#5b6478;font-size:0.7rem;margin-top:3px'>{source}</div></div>"""
+            else:
+                news_html += f"""<div style='padding:14px 0;{border}'>
+                    <span style='color:#d3d9e5;font-size:0.88rem;line-height:1.5;font-weight:500'>{title}</span>
+                    <div style='color:#5b6478;font-size:0.7rem;margin-top:3px'>{source}</div></div>"""
+        news_html += "</div>"
+        st.markdown(news_html, unsafe_allow_html=True)
+    else:
+        st.markdown("<div style='background:#12161f;border:1px solid #1f2533;border-radius:16px;padding:16px;color:#8a93a8;font-size:0.85rem'>Headlines loading…</div>", unsafe_allow_html=True)
+
+    # ── 6. QUICK ACCESS TO SIGNALS ────────────────────────────────
+    st.markdown("<div class='section-title'>Intelligence engines</div>", unsafe_allow_html=True)
+    engines = [
+        ("🌡️","Fear-Greed Index","Live sentiment gauge","#ff8c5d"),
+        ("🎯","Market Regime","Structure detection","#b07dff"),
+        ("⚠️","Early Warning","Bear Score monitor","#ff7a7a"),
+        ("📊","Market Breadth","A/D participation","#7da4ff"),
+    ]
+    eng_html = "<div style='display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px'>"
+    for icon, name, desc, clr in engines:
+        eng_html += f"""<div style='background:#12161f;border:1px solid #1f2533;border-radius:18px;
+            padding:18px;transition:all 0.2s'>
+            <div style='font-size:1.6rem;margin-bottom:8px'>{icon}</div>
+            <div style='color:#e7eaf0;font-weight:700;font-size:0.88rem'>{name}</div>
+            <div style='color:#5b6478;font-size:0.72rem;margin-top:2px'>{desc}</div>
+            <div style='color:{clr};font-size:0.7rem;font-weight:600;margin-top:10px'>Open from sidebar →</div>
+        </div>"""
+    eng_html += "</div>"
+    st.markdown(eng_html, unsafe_allow_html=True)
+
+    # Footer
+    st.markdown(f"""<div style='text-align:center;color:#3d4456;font-size:0.68rem;
+        margin-top:32px;padding-top:16px;border-top:1px solid #14181f'>
+        BearIQ Market Weather Intelligence · beariq.in<br>For educational purposes only</div>""",
+        unsafe_allow_html=True)
+
+# ── OTHER PAGES (unchanged) ───────────────────────────────────────
+elif "Fear-Greed" in page:
+    track(username, "fear_greed")
+    try:
+        exec(open(os.path.join(os.path.dirname(__file__),"beariq_feargreed.py"),encoding="utf-8").read())
+    except Exception as e:
+        st.error(f"Fear-Greed module error: {e}")
+
+elif "Regime" in page:
+    track(username, "regime")
+    try:
+        exec(open(os.path.join(os.path.dirname(__file__),"beariq_regime.py"),encoding="utf-8").read())
+    except Exception as e:
+        st.error(f"Regime module error: {e}")
+
+elif "Early Warning" in page:
+    track(username, "early_warning")
+    try:
+        exec(open(os.path.join(os.path.dirname(__file__),"beariq_early_warning.py"),encoding="utf-8").read())
+    except Exception as e:
+        st.error(f"Early Warning module error: {e}")
+
+elif "Breadth" in page:
+    track(username, "breadth")
+    try:
+        exec(open(os.path.join(os.path.dirname(__file__),"beariq_breadth.py"),encoding="utf-8").read())
+    except Exception as e:
+        st.error(f"Breadth module error: {e}")
+
+elif "Weather" in page:
+    track(username, "weather")
+    render_weather_page(username)
+
+elif "Analytics" in page and admin:
+    track(username, "admin")
+    render_analytics_page()
+
+elif "Users" in page and admin:
+    track(username, "admin")
+    render_admin_users()
