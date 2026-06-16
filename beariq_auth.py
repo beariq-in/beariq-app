@@ -1,4 +1,422 @@
-import base64
-code="IiIiCkJlYXJJUSBBdXRoZW50aWNhdGlvbiBNb2R1bGUKSGFuZGxlczogTG9naW4sIFJlZ2lzdGVyLCBTZXNzaW9uLCBBZG1pbiwgQXV0by1sb2dpbgoiIiIKaW1wb3J0IHN0cmVhbWxpdCBhcyBzdAppbXBvcnQgaGFzaGxpYiwganNvbiwgb3MKZnJvbSBkYXRldGltZSBpbXBvcnQgZGF0ZXRpbWUsIHRpbWVkZWx0YQoKIyDilIDilIAgUEFUSFMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACkJBU0UgPSBvcy5wYXRoLmRpcm5hbWUob3MucGF0aC5hYnNwYXRoKF9fZmlsZV9fKSkKVVNFUlNfRklMRSA9IG9zLnBhdGguam9pbihCQVNFLCAiZGF0YSIsICJ1c2Vycy5qc29uIikKSU5WSVRFX0NPREUgPSAiQkVBUklRMjAyNiIKQURNSU5fVVNFUk5BTUUgPSAiaXNoYW5fYWRtaW4iClNFU1NJT05fREFZUyA9IDMwCgojIOKUgOKUgCBTVE9SQUdFIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgApkZWYgZW5zdXJlX2RhdGFfZGlyKCk6CiAgICBvcy5tYWtlZGlycyhvcy5wYXRoLmpvaW4oQkFTRSwgImRhdGEiKSwgZXhpc3Rfb2s9VHJ1ZSkKCmRlZiBsb2FkX3VzZXJzKCk6CiAgICBlbnN1cmVfZGF0YV9kaXIoKQogICAgaWYgb3MucGF0aC5leGlzdHMoVVNFUlNfRklMRSk6CiAgICAgICAgdHJ5OgogICAgICAgICAgICB3aXRoIG9wZW4oVVNFUlNfRklMRSwgInIiKSBhcyBmOgogICAgICAgICAgICAgICAgcmV0dXJuIGpzb24ubG9hZChmKQogICAgICAgIGV4Y2VwdDogcmV0dXJuIHt9CiAgICByZXR1cm4ge30KCmRlZiBzYXZlX3VzZXJzKHVzZXJzKToKICAgIGVuc3VyZV9kYXRhX2RpcigpCiAgICB3aXRoIG9wZW4oVVNFUlNfRklMRSwgInciKSBhcyBmOgogICAgICAgIGpzb24uZHVtcCh1c2VycywgZiwgaW5kZW50PTIpCgojIOKUgOKUgCBTRUNVUklUWSDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKZGVmIGhhc2hfcGFzc3dvcmQocGFzc3dvcmQpOgogICAgcmV0dXJuIGhhc2hsaWIuc2hhMjU2KHBhc3N3b3JkLmVuY29kZSgpKS5oZXhkaWdlc3QoKQoKZGVmIHZlcmlmeV9wYXNzd29yZChwYXNzd29yZCwgaGFzaGVkKToKICAgIHJldHVybiBoYXNoX3Bhc3N3b3JkKHBhc3N3b3JkKSA9PSBoYXNoZWQKCiMg4pSA4pSAIFNFU1NJT04gTUFOQUdFTUVOVCDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKZGVmIGdldF9zZXNzaW9uX2tleSh1c2VybmFtZSk6CiAgICAiIiJHZW5lcmF0ZSB1bmlxdWUgc2Vzc2lvbiBrZXkiIiIKICAgIHNlZWQgPSB1c2VybmFtZSArICJiZWFyaXFfc2VjcmV0XzIwMjYiCiAgICByZXR1cm4gaGFzaGxpYi5zaGEyNTYoc2VlZC5lbmNvZGUoKSkuaGV4ZGlnZXN0KClbOjMyXQoKZGVmIHNhdmVfc2Vzc2lvbih1c2VybmFtZSk6CiAgICAiIiJTYXZlIHNlc3Npb24g4oCUIGJvdGggc3RhdGUgKyBwZXJzaXN0ZW50IHRva2VuIHZpYSBVUkwiIiIKICAgIHN0LnNlc3Npb25fc3RhdGVbImJlYXJpcV91c2VyIl0gPSB1c2VybmFtZQogICAgc3Quc2Vzc2lvbl9zdGF0ZVsiYmVhcmlxX3Nlc3Npb25fa2V5Il0gPSBnZXRfc2Vzc2lvbl9rZXkodXNlcm5hbWUpCiAgICBzdC5zZXNzaW9uX3N0YXRlWyJiZWFyaXFfbG9naW5fdGltZSJdID0gZGF0ZXRpbWUubm93KCkuaXNvZm9ybWF0KCkKICAgICMgU2F2ZSB0b2tlbiB0byB1c2VycyBmaWxlIHNvIHdlIGNhbiByZXN0b3JlIG9uIHJlZnJlc2gKICAgIHVzZXJzID0gbG9hZF91c2VycygpCiAgICBpZiB1c2VybmFtZSBpbiB1c2VyczoKICAgICAgICB1c2Vyc1t1c2VybmFtZV1bImxhc3RfbG9naW4iXSA9IGRhdGV0aW1lLm5vdygpLnN0cmZ0aW1lKCIlZCAlYiAlWSAlSTolTSAlcCIpCiAgICAgICAgdXNlcnNbdXNlcm5hbWVdWyJsb2dpbl9jb3VudCJdID0gdXNlcnNbdXNlcm5hbWVdLmdldCgibG9naW5fY291bnQiLCAwKSArIDEKICAgICAgICB1c2Vyc1t1c2VybmFtZV1bInNlc3Npb25fdG9rZW4iXSA9IGdldF9zZXNzaW9uX2tleSh1c2VybmFtZSkKICAgICAgICB1c2Vyc1t1c2VybmFtZV1bInNlc3Npb25fZGF0ZSJdID0gZGF0ZXRpbWUubm93KCkuaXNvZm9ybWF0KCkKICAgICAgICBzYXZlX3VzZXJzKHVzZXJzKQogICAgIyBJbmplY3QgSlMgdG8gc2F2ZSBsb2dpbiBpbiBsb2NhbFN0b3JhZ2UKICAgIF90b2tlbiA9IGdldF9zZXNzaW9uX2tleSh1c2VybmFtZSkKICAgIHN0Lm1hcmtkb3duKGYiIiI8c2NyaXB0PgogICAgdHJ5IHt7CiAgICAgICAgbG9jYWxTdG9yYWdlLnNldEl0ZW0oJ2JlYXJpcV91c2VyJywgJ3t1c2VybmFtZX0nKTsKICAgICAgICBsb2NhbFN0b3JhZ2Uuc2V0SXRlbSgnYmVhcmlxX3Rva2VuJywgJ3tfdG9rZW59Jyk7CiAgICAgICAgbG9jYWxTdG9yYWdlLnNldEl0ZW0oJ2JlYXJpcV90aW1lJywgbmV3IERhdGUoKS50b0lTT1N0cmluZygpKTsKICAgIH19IGNhdGNoKGUpIHt7fX0KICAgIDwvc2NyaXB0PiIiIiwgdW5zYWZlX2FsbG93X2h0bWw9VHJ1ZSkKCmRlZiByZXN0b3JlX3Nlc3Npb25fZnJvbV9zdG9yYWdlKCk6CiAgICAiIiJUcnkgdG8gcmVzdG9yZSBzZXNzaW9uIGZyb20gbG9jYWxTdG9yYWdlIG9uIHBhZ2UgbG9hZCIiIgogICAgaWYgImJlYXJpcV91c2VyIiBpbiBzdC5zZXNzaW9uX3N0YXRlOgogICAgICAgIHJldHVybiBUcnVlCiAgICAjIEluamVjdCBKUyB0byByZWFkIGxvY2FsU3RvcmFnZSBhbmQgc2V0IFVSTCBwYXJhbQogICAgc3QubWFya2Rvd24oIiIiPHNjcmlwdD4KICAgIHRyeSB7CiAgICAgICAgdmFyIHVzZXIgPSBsb2NhbFN0b3JhZ2UuZ2V0SXRlbSgnYmVhcmlxX3VzZXInKTsKICAgICAgICB2YXIgdG9rZW4gPSBsb2NhbFN0b3JhZ2UuZ2V0SXRlbSgnYmVhcmlxX3Rva2VuJyk7CiAgICAgICAgdmFyIHRpbWUgPSBsb2NhbFN0b3JhZ2UuZ2V0SXRlbSgnYmVhcmlxX3RpbWUnKTsKICAgICAgICBpZiAodXNlciAmJiB0b2tlbiAmJiB0aW1lKSB7CiAgICAgICAgICAgIHZhciBzdG9yZWQgPSBuZXcgRGF0ZSh0aW1lKTsKICAgICAgICAgICAgdmFyIG5vdyA9IG5ldyBEYXRlKCk7CiAgICAgICAgICAgIHZhciBkYXlzID0gKG5vdyAtIHN0b3JlZCkgLyAoMTAwMCAqIDYwICogNjAgKiAyNCk7CiAgICAgICAgICAgIGlmIChkYXlzIDwgMzApIHsKICAgICAgICAgICAgICAgIHZhciB1cmwgPSBuZXcgVVJMKHdpbmRvdy5sb2NhdGlvbi5ocmVmKTsKICAgICAgICAgICAgICAgIGlmICghdXJsLnNlYXJjaFBhcmFtcy5nZXQoJ19hdXRoX3VzZXInKSkgewogICAgICAgICAgICAgICAgICAgIHVybC5zZWFyY2hQYXJhbXMuc2V0KCdfYXV0aF91c2VyJywgdXNlcik7CiAgICAgICAgICAgICAgICAgICAgdXJsLnNlYXJjaFBhcmFtcy5zZXQoJ19hdXRoX3Rva2VuJywgdG9rZW4pOwogICAgICAgICAgICAgICAgICAgIHdpbmRvdy5sb2NhdGlvbi5ocmVmID0gdXJsLnRvU3RyaW5nKCk7CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH0gZWxzZSB7CiAgICAgICAgICAgICAgICBsb2NhbFN0b3JhZ2UucmVtb3ZlSXRlbSgnYmVhcmlxX3VzZXInKTsKICAgICAgICAgICAgICAgIGxvY2FsU3RvcmFnZS5yZW1vdmVJdGVtKCdiZWFyaXFfdG9rZW4nKTsKICAgICAgICAgICAgICAgIGxvY2FsU3RvcmFnZS5yZW1vdmVJdGVtKCdiZWFyaXFfdGltZScpOwogICAgICAgICAgICB9CiAgICAgICAgfQogICAgfSBjYXRjaChlKSB7fQogICAgPC9zY3JpcHQ+IiIiLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQogICAgcmV0dXJuIEZhbHNlCgpkZWYgaXNfbG9nZ2VkX2luKCk6CiAgICAiIiJDaGVjayBpZiB1c2VyIGhhcyB2YWxpZCBzZXNzaW9uIOKAlCByZXN0b3JlIGZyb20gbG9jYWxTdG9yYWdlIGlmIG5lZWRlZCIiIgogICAgIyBUcnkgVVJMIHBhcmFtcyBmaXJzdCAoc2V0IGJ5IGxvY2FsU3RvcmFnZSBKUykKICAgIHRyeToKICAgICAgICBwYXJhbXMgPSBzdC5xdWVyeV9wYXJhbXMKICAgICAgICBhdXRoX3VzZXIgPSBwYXJhbXMuZ2V0KCJfYXV0aF91c2VyIiwgIiIpCiAgICAgICAgYXV0aF90b2tlbiA9IHBhcmFtcy5nZXQoIl9hdXRoX3Rva2VuIiwgIiIpCiAgICAgICAgaWYgYXV0aF91c2VyIGFuZCBhdXRoX3Rva2VuOgogICAgICAgICAgICBleHBlY3RlZCA9IGdldF9zZXNzaW9uX2tleShhdXRoX3VzZXIpCiAgICAgICAgICAgIGlmIGF1dGhfdG9rZW4gPT0gZXhwZWN0ZWQ6CiAgICAgICAgICAgICAgICB1c2VycyA9IGxvYWRfdXNlcnMoKQogICAgICAgICAgICAgICAgdXNlciA9IHVzZXJzLmdldChhdXRoX3VzZXIsIHt9KQogICAgICAgICAgICAgICAgaWYgdXNlci5nZXQoInN0YXR1cyIpID09ICJhY3RpdmUiOgogICAgICAgICAgICAgICAgICAgICMgUmVzdG9yZSBzZXNzaW9uIHN0YXRlCiAgICAgICAgICAgICAgICAgICAgc3Quc2Vzc2lvbl9zdGF0ZVsiYmVhcmlxX3VzZXIiXSA9IGF1dGhfdXNlcgogICAgICAgICAgICAgICAgICAgIHN0LnNlc3Npb25fc3RhdGVbImJlYXJpcV9zZXNzaW9uX2tleSJdID0gYXV0aF90b2tlbgogICAgICAgICAgICAgICAgICAgIHN0LnNlc3Npb25fc3RhdGVbImJlYXJpcV9sb2dpbl90aW1lIl0gPSBkYXRldGltZS5ub3coKS5pc29mb3JtYXQoKQogICAgICAgICAgICAgICAgICAgICMgQ2xlYXIgcGFyYW1zIGZyb20gVVJMIChjbGVhbiBVUkwpCiAgICAgICAgICAgICAgICAgICAgc3QucXVlcnlfcGFyYW1zLmNsZWFyKCkKICAgICAgICAgICAgICAgICAgICByZXR1cm4gVHJ1ZQogICAgZXhjZXB0OiBwYXNzCgogICAgIyBDaGVjayBzZXNzaW9uIHN0YXRlCiAgICBpZiAiYmVhcmlxX3VzZXIiIG5vdCBpbiBzdC5zZXNzaW9uX3N0YXRlOgogICAgICAgIHJldHVybiBGYWxzZQogICAgaWYgImJlYXJpcV9zZXNzaW9uX2tleSIgbm90IGluIHN0LnNlc3Npb25fc3RhdGU6CiAgICAgICAgcmV0dXJuIEZhbHNlCiAgICB1c2VybmFtZSA9IHN0LnNlc3Npb25fc3RhdGVbImJlYXJpcV91c2VyIl0KICAgIGV4cGVjdGVkX2tleSA9IGdldF9zZXNzaW9uX2tleSh1c2VybmFtZSkKICAgIGlmIHN0LnNlc3Npb25fc3RhdGVbImJlYXJpcV9zZXNzaW9uX2tleSJdICE9IGV4cGVjdGVkX2tleToKICAgICAgICByZXR1cm4gRmFsc2UKICAgIGxvZ2luX3RpbWUgPSBzdC5zZXNzaW9uX3N0YXRlLmdldCgiYmVhcmlxX2xvZ2luX3RpbWUiKQogICAgaWYgbG9naW5fdGltZToKICAgICAgICB0cnk6CiAgICAgICAgICAgIGx0ID0gZGF0ZXRpbWUuZnJvbWlzb2Zvcm1hdChsb2dpbl90aW1lKQogICAgICAgICAgICBpZiAoZGF0ZXRpbWUubm93KCkgLSBsdCkuZGF5cyA+PSBTRVNTSU9OX0RBWVM6CiAgICAgICAgICAgICAgICBsb2dvdXQoKQogICAgICAgICAgICAgICAgcmV0dXJuIEZhbHNlCiAgICAgICAgZXhjZXB0OiBwYXNzCiAgICB1c2VycyA9IGxvYWRfdXNlcnMoKQogICAgdXNlciA9IHVzZXJzLmdldCh1c2VybmFtZSwge30pCiAgICBpZiB1c2VyLmdldCgic3RhdHVzIikgIT0gImFjdGl2ZSI6CiAgICAgICAgbG9nb3V0KCkKICAgICAgICByZXR1cm4gRmFsc2UKICAgIHJldHVybiBUcnVlCgpkZWYgZ2V0X2N1cnJlbnRfdXNlcigpOgogICAgcmV0dXJuIHN0LnNlc3Npb25fc3RhdGUuZ2V0KCJiZWFyaXFfdXNlciIsIE5vbmUpCgpkZWYgaXNfYWRtaW4oKToKICAgIHJldHVybiBnZXRfY3VycmVudF91c2VyKCkgPT0gQURNSU5fVVNFUk5BTUUKCmRlZiBsb2dvdXQoKToKICAgIGZvciBrZXkgaW4gWyJiZWFyaXFfdXNlciIsImJlYXJpcV9zZXNzaW9uX2tleSIsImJlYXJpcV9sb2dpbl90aW1lIl06CiAgICAgICAgaWYga2V5IGluIHN0LnNlc3Npb25fc3RhdGU6CiAgICAgICAgICAgIGRlbCBzdC5zZXNzaW9uX3N0YXRlW2tleV0KICAgICMgQ2xlYXIgbG9jYWxTdG9yYWdlIHRvbwogICAgc3QubWFya2Rvd24oIiIiPHNjcmlwdD4KICAgIHRyeSB7CiAgICAgICAgbG9jYWxTdG9yYWdlLnJlbW92ZUl0ZW0oJ2JlYXJpcV91c2VyJyk7CiAgICAgICAgbG9jYWxTdG9yYWdlLnJlbW92ZUl0ZW0oJ2JlYXJpcV90b2tlbicpOwogICAgICAgIGxvY2FsU3RvcmFnZS5yZW1vdmVJdGVtKCdiZWFyaXFfdGltZScpOwogICAgfSBjYXRjaChlKSB7fQogICAgPC9zY3JpcHQ+IiIiLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQoKIyDilIDilIAgVUkgU1RZTEVTIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgApBVVRIX0NTUyA9ICIiIgo8c3R5bGU+Ci5zdEFwcHtiYWNrZ3JvdW5kOmxpbmVhci1ncmFkaWVudCgxMzVkZWcsIzBmMTcyYSAwJSwjMWUyOTNiIDEwMCUpO2NvbG9yOiNlMmU4ZjB9CltkYXRhLXRlc3RpZD0ic3RTaWRlYmFyIl17ZGlzcGxheTpub25lfQouYXV0aC1jb250YWluZXJ7CiAgICBtYXgtd2lkdGg6NDIwcHg7bWFyZ2luOjAgYXV0bztwYWRkaW5nOjQwcHggMjBweDsKfQouYXV0aC1sb2dvewogICAgdGV4dC1hbGlnbjpjZW50ZXI7bWFyZ2luLWJvdHRvbTozMnB4Owp9Ci5hdXRoLWxvZ28tdGV4dHsKICAgIGZvbnQtc2l6ZTozcmVtO2ZvbnQtd2VpZ2h0OjkwMDtjb2xvcjojZmY0NDQ0OwogICAgbGV0dGVyLXNwYWNpbmc6NnB4O2Rpc3BsYXk6YmxvY2s7Cn0KLmF1dGgtdGFnbGluZXsKICAgIGZvbnQtc2l6ZTowLjhyZW07Y29sb3I6Izk0YTNiODtsZXR0ZXItc3BhY2luZzoycHg7CiAgICBkaXNwbGF5OmJsb2NrO21hcmdpbi10b3A6NHB4Owp9Ci5hdXRoLWNhcmR7CiAgICBiYWNrZ3JvdW5kOiMxZTI5M2I7Ym9yZGVyOjFweCBzb2xpZCAjMzM0MTU1OwogICAgYm9yZGVyLXJhZGl1czoxNnB4O3BhZGRpbmc6MzJweDsKfQouYXV0aC10aXRsZXsKICAgIGZvbnQtc2l6ZToxLjJyZW07Zm9udC13ZWlnaHQ6ODAwO2NvbG9yOiNmMWY1Zjk7CiAgICBtYXJnaW4tYm90dG9tOjI0cHg7dGV4dC1hbGlnbjpjZW50ZXI7Cn0KLmF1dGgtZGl2aWRlcnsKICAgIGJvcmRlcjpub25lO2JvcmRlci10b3A6MXB4IHNvbGlkICMzMzQxNTU7CiAgICBtYXJnaW46MjBweCAwOwp9Ci5zdFRleHRJbnB1dD5kaXY+ZGl2PmlucHV0ewogICAgYmFja2dyb3VuZDojMGYxNzJhIWltcG9ydGFudDsKICAgIGJvcmRlcjoxcHggc29saWQgIzMzNDE1NSFpbXBvcnRhbnQ7CiAgICBjb2xvcjojZjFmNWY5IWltcG9ydGFudDsKICAgIGJvcmRlci1yYWRpdXM6OHB4IWltcG9ydGFudDsKfQouc3RUZXh0SW5wdXQ+ZGl2PmRpdj5pbnB1dDpmb2N1c3sKICAgIGJvcmRlcjoxcHggc29saWQgIzYwYTVmYSFpbXBvcnRhbnQ7CiAgICBib3gtc2hhZG93Om5vbmUhaW1wb3J0YW50Owp9Ci5zdEJ1dHRvbj5idXR0b257CiAgICBiYWNrZ3JvdW5kOiNkYzI2MjYhaW1wb3J0YW50O2NvbG9yOiNmZmYhaW1wb3J0YW50OwogICAgYm9yZGVyOm5vbmUhaW1wb3J0YW50O2JvcmRlci1yYWRpdXM6OHB4IWltcG9ydGFudDsKICAgIGZvbnQtd2VpZ2h0OjcwMCFpbXBvcnRhbnQ7d2lkdGg6MTAwJSFpbXBvcnRhbnQ7CiAgICBwYWRkaW5nOjEycHghaW1wb3J0YW50O2ZvbnQtc2l6ZTowLjk1cmVtIWltcG9ydGFudDsKfQouc3RCdXR0b24+YnV0dG9uOmhvdmVye2JhY2tncm91bmQ6I2I5MWMxYyFpbXBvcnRhbnQ7fQouYXV0aC1mb290ZXJ7CiAgICB0ZXh0LWFsaWduOmNlbnRlcjtjb2xvcjojNjQ3NDhiOwogICAgZm9udC1zaXplOjAuNzVyZW07bWFyZ2luLXRvcDoyNHB4Owp9Ci5lcnJvci1ib3h7CiAgICBiYWNrZ3JvdW5kOiMyZDE1MTU7Ym9yZGVyOjFweCBzb2xpZCAjZjg3MTcxNTU7CiAgICBib3JkZXItbGVmdDozcHggc29saWQgI2Y4NzE3MTtib3JkZXItcmFkaXVzOjhweDsKICAgIHBhZGRpbmc6MTBweCAxNHB4O2NvbG9yOiNmY2E1YTU7Zm9udC1zaXplOjAuODVyZW07CiAgICBtYXJnaW46MTBweCAwOwp9Ci5zdWNjZXNzLWJveHsKICAgIGJhY2tncm91bmQ6IzBmMjkyMjtib3JkZXI6MXB4IHNvbGlkICMzNGQzOTk1NTsKICAgIGJvcmRlci1sZWZ0OjNweCBzb2xpZCAjMzRkMzk5O2JvcmRlci1yYWRpdXM6OHB4OwogICAgcGFkZGluZzoxMHB4IDE0cHg7Y29sb3I6IzAwZmY4ODtmb250LXNpemU6MC44NXJlbTsKICAgIG1hcmdpbjoxMHB4IDA7Cn0KI01haW5NZW51e3Zpc2liaWxpdHk6aGlkZGVuIWltcG9ydGFudH0KZm9vdGVye2Rpc3BsYXk6bm9uZSFpbXBvcnRhbnQ7dmlzaWJpbGl0eTpoaWRkZW4haW1wb3J0YW50O2hlaWdodDowIWltcG9ydGFudDtvdmVyZmxvdzpoaWRkZW4haW1wb3J0YW50fQouc3REZXBsb3lCdXR0b257ZGlzcGxheTpub25lIWltcG9ydGFudH0KW2RhdGEtdGVzdGlkPSJzdERlY29yYXRpb24iXXtkaXNwbGF5Om5vbmUhaW1wb3J0YW50fQpbZGF0YS10ZXN0aWQ9InN0Rm9vdGVyIl17ZGlzcGxheTpub25lIWltcG9ydGFudH0KW2NsYXNzKj0idmlld2VyQmFkZ2UiXXtkaXNwbGF5Om5vbmUhaW1wb3J0YW50O3Zpc2liaWxpdHk6aGlkZGVuIWltcG9ydGFudH0KW2NsYXNzKj0iU3RhdHVzV2lkZ2V0Il17ZGlzcGxheTpub25lIWltcG9ydGFudH0KW2NsYXNzKj0iY3JlYXRlZEJ5Il17ZGlzcGxheTpub25lIWltcG9ydGFudH0KaWZyYW1lW3RpdGxlKj0ic3RyZWFtbGl0Il17ZGlzcGxheTpub25lIWltcG9ydGFudH0KZGl2W2NsYXNzKj0iYmFkZ2UiXXtkaXNwbGF5Om5vbmUhaW1wb3J0YW50fQouc3RyZWFtbGl0LWZvb3RlcntkaXNwbGF5Om5vbmUhaW1wb3J0YW50fQpkaXY6aGFzKD4gYVtocmVmKj0ic3RyZWFtbGl0LmlvIl0pe2Rpc3BsYXk6bm9uZSFpbXBvcnRhbnQ7aGVpZ2h0OjAhaW1wb3J0YW50fQpkaXY6aGFzKD4gW2NsYXNzKj0idmlld2VyQmFkZ2UiXSl7ZGlzcGxheTpub25lIWltcG9ydGFudDtoZWlnaHQ6MCFpbXBvcnRhbnR9Cjwvc3R5bGU+CiIiIgoKZGVmIHJlbmRlcl9sb2dvKCk6CiAgICBzdC5tYXJrZG93bigiIiIKICAgIDxkaXYgY2xhc3M9ImF1dGgtbG9nbyI+CiAgICAgICAgPHNwYW4gY2xhc3M9ImF1dGgtbG9nby10ZXh0Ij5CZWFySVE8L3NwYW4+CiAgICAgICAgPHNwYW4gY2xhc3M9ImF1dGgtdGFnbGluZSI+TUFSS0VUIFdFQVRIRVIgSU5URUxMSUdFTkNFPC9zcGFuPgogICAgPC9kaXY+CiAgICAiIiIsIHVuc2FmZV9hbGxvd19odG1sPVRydWUpCgojIOKUgOKUgCBMT0dJTiBQQUdFIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgApkZWYgcmVuZGVyX2xvZ2luKCk6CiAgICBzdC5tYXJrZG93bihBVVRIX0NTUywgdW5zYWZlX2FsbG93X2h0bWw9VHJ1ZSkKICAgIHN0Lm1hcmtkb3duKCI8ZGl2IGNsYXNzPSdhdXRoLWNvbnRhaW5lcic+IiwgdW5zYWZlX2FsbG93X2h0bWw9VHJ1ZSkKICAgIHJlbmRlcl9sb2dvKCkKICAgIHN0Lm1hcmtkb3duKCI8ZGl2IGNsYXNzPSdhdXRoLWNhcmQnPiIsIHVuc2FmZV9hbGxvd19odG1sPVRydWUpCiAgICBzdC5tYXJrZG93bigiPGRpdiBjbGFzcz0nYXV0aC10aXRsZSc+V2VsY29tZSBCYWNrPC9kaXY+IiwgdW5zYWZlX2FsbG93X2h0bWw9VHJ1ZSkKCiAgICB1c2VybmFtZSA9IHN0LnRleHRfaW5wdXQoIlVzZXJuYW1lIiwgcGxhY2Vob2xkZXI9IkVudGVyIHlvdXIgdXNlcm5hbWUiLCBrZXk9ImxvZ2luX3VzZXIiKQogICAgcGFzc3dvcmQgPSBzdC50ZXh0X2lucHV0KCJQYXNzd29yZCIsIHR5cGU9InBhc3N3b3JkIiwgcGxhY2Vob2xkZXI9IkVudGVyIHlvdXIgcGFzc3dvcmQiLCBrZXk9ImxvZ2luX3Bhc3MiKQoKICAgIGlmIHN0LmJ1dHRvbigiU2lnbiBJbiDihpIiLCBrZXk9ImxvZ2luX2J0biIpOgogICAgICAgIGlmIG5vdCB1c2VybmFtZSBvciBub3QgcGFzc3dvcmQ6CiAgICAgICAgICAgIHN0Lm1hcmtkb3duKCI8ZGl2IGNsYXNzPSdlcnJvci1ib3gnPlBsZWFzZSBlbnRlciB1c2VybmFtZSBhbmQgcGFzc3dvcmQ8L2Rpdj4iLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQogICAgICAgIGVsc2U6CiAgICAgICAgICAgIHVzZXJzID0gbG9hZF91c2VycygpCiAgICAgICAgICAgIHVzZXIgPSB1c2Vycy5nZXQodXNlcm5hbWUubG93ZXIoKS5zdHJpcCgpKQogICAgICAgICAgICBpZiBub3QgdXNlcjoKICAgICAgICAgICAgICAgIHN0Lm1hcmtkb3duKCI8ZGl2IGNsYXNzPSdlcnJvci1ib3gnPlVzZXJuYW1lIG5vdCBmb3VuZDwvZGl2PiIsIHVuc2FmZV9hbGxvd19odG1sPVRydWUpCiAgICAgICAgICAgIGVsaWYgdXNlci5nZXQoInN0YXR1cyIpICE9ICJhY3RpdmUiOgogICAgICAgICAgICAgICAgc3QubWFya2Rvd24oIjxkaXYgY2xhc3M9J2Vycm9yLWJveCc+QWNjb3VudCBpbmFjdGl2ZS4gQ29udGFjdCBCZWFySVEgc3VwcG9ydC48L2Rpdj4iLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQogICAgICAgICAgICBlbGlmIG5vdCB2ZXJpZnlfcGFzc3dvcmQocGFzc3dvcmQsIHVzZXJbInBhc3N3b3JkX2hhc2giXSk6CiAgICAgICAgICAgICAgICBzdC5tYXJrZG93bigiPGRpdiBjbGFzcz0nZXJyb3ItYm94Jz5JbmNvcnJlY3QgcGFzc3dvcmQ8L2Rpdj4iLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQogICAgICAgICAgICBlbHNlOgogICAgICAgICAgICAgICAgc2F2ZV9zZXNzaW9uKHVzZXJuYW1lLmxvd2VyKCkuc3RyaXAoKSkKICAgICAgICAgICAgICAgIHN0LnJlcnVuKCkKCiAgICBzdC5tYXJrZG93bigiPGhyIGNsYXNzPSdhdXRoLWRpdmlkZXInPiIsIHVuc2FmZV9hbGxvd19odG1sPVRydWUpCiAgICBzdC5tYXJrZG93bigiPGRpdiBzdHlsZT0ndGV4dC1hbGlnbjpjZW50ZXI7Y29sb3I6Izk0YTNiODtmb250LXNpemU6MC44MnJlbSc+TmV3IHVzZXI/IDxzcGFuIHN0eWxlPSdjb2xvcjojNDQ4OGZmJz5SZWdpc3RlciBiZWxvdzwvc3Bhbj48L2Rpdj4iLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQoKICAgIHN0Lm1hcmtkb3duKCI8L2Rpdj4iLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQoKICAgICMgUmVnaXN0ZXIgc2VjdGlvbgogICAgd2l0aCBzdC5leHBhbmRlcigiQ3JlYXRlIE5ldyBBY2NvdW50Iik6CiAgICAgICAgcmVuZGVyX3JlZ2lzdGVyKCkKCiAgICBzdC5tYXJrZG93bigiPGRpdiBjbGFzcz0nYXV0aC1mb290ZXInPkJlYXJJUSBNYXJrZXQgV2VhdGhlciBJbnRlbGxpZ2VuY2U8YnI+Rm9yIGVkdWNhdGlvbmFsIHB1cnBvc2VzIG9ubHk8L2Rpdj4iLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQogICAgc3QubWFya2Rvd24oIjwvZGl2PiIsIHVuc2FmZV9hbGxvd19odG1sPVRydWUpCgojIOKUgOKUgCBSRUdJU1RFUiBQQUdFIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgApkZWYgcmVuZGVyX3JlZ2lzdGVyKCk6CiAgICBzdC5tYXJrZG93bigiPGRpdiBzdHlsZT0ncGFkZGluZzoxMHB4IDAnPiIsIHVuc2FmZV9hbGxvd19odG1sPVRydWUpCgogICAgZnVsbF9uYW1lID0gc3QudGV4dF9pbnB1dCgiRnVsbCBOYW1lIiwgcGxhY2Vob2xkZXI9IllvdXIgZnVsbCBuYW1lIiwga2V5PSJyZWdfbmFtZSIpCiAgICByZWdfdXNlcm5hbWUgPSBzdC50ZXh0X2lucHV0KCJDaG9vc2UgVXNlcm5hbWUiLCBwbGFjZWhvbGRlcj0iZS5nLiByYWplc2hfdHJhZGVyIiwga2V5PSJyZWdfdXNlciIpCiAgICBlbWFpbCA9IHN0LnRleHRfaW5wdXQoIkVtYWlsIEFkZHJlc3MiLCBwbGFjZWhvbGRlcj0ieW91ckBlbWFpbC5jb20iLCBrZXk9InJlZ19lbWFpbCIpCiAgICByZWdfcGFzc3dvcmQgPSBzdC50ZXh0X2lucHV0KCJDcmVhdGUgUGFzc3dvcmQiLCB0eXBlPSJwYXNzd29yZCIsIHBsYWNlaG9sZGVyPSJNaW5pbXVtIDYgY2hhcmFjdGVycyIsIGtleT0icmVnX3Bhc3MiKQogICAgaW52aXRlID0gc3QudGV4dF9pbnB1dCgiSW52aXRlIENvZGUiLCBwbGFjZWhvbGRlcj0iRW50ZXIgaW52aXRlIGNvZGUiLCBrZXk9InJlZ19pbnZpdGUiKQoKICAgIGlmIHN0LmJ1dHRvbigiQ3JlYXRlIEFjY291bnQiLCBrZXk9InJlZ19idG4iKToKICAgICAgICAjIFZhbGlkYXRpb25zCiAgICAgICAgaWYgbm90IGFsbChbZnVsbF9uYW1lLCByZWdfdXNlcm5hbWUsIGVtYWlsLCByZWdfcGFzc3dvcmQsIGludml0ZV0pOgogICAgICAgICAgICBzdC5tYXJrZG93bigiPGRpdiBjbGFzcz0nZXJyb3ItYm94Jz5BbGwgZmllbGRzIGFyZSByZXF1aXJlZDwvZGl2PiIsIHVuc2FmZV9hbGxvd19odG1sPVRydWUpCiAgICAgICAgZWxpZiBpbnZpdGUudXBwZXIoKS5zdHJpcCgpICE9IElOVklURV9DT0RFOgogICAgICAgICAgICBzdC5tYXJrZG93bigiPGRpdiBjbGFzcz0nZXJyb3ItYm94Jz5JbnZhbGlkIGludml0ZSBjb2RlPC9kaXY+IiwgdW5zYWZlX2FsbG93X2h0bWw9VHJ1ZSkKICAgICAgICBlbGlmIGxlbihyZWdfcGFzc3dvcmQpIDwgNjoKICAgICAgICAgICAgc3QubWFya2Rvd24oIjxkaXYgY2xhc3M9J2Vycm9yLWJveCc+UGFzc3dvcmQgbXVzdCBiZSBhdCBsZWFzdCA2IGNoYXJhY3RlcnM8L2Rpdj4iLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQogICAgICAgIGVsaWYgIiAiIGluIHJlZ191c2VybmFtZSBvciBub3QgcmVnX3VzZXJuYW1lLnJlcGxhY2UoIl8iLCIiKS5pc2FsbnVtKCk6CiAgICAgICAgICAgIHN0Lm1hcmtkb3duKCI8ZGl2IGNsYXNzPSdlcnJvci1ib3gnPlVzZXJuYW1lOiBsZXR0ZXJzLCBudW1iZXJzIGFuZCB1bmRlcnNjb3JlIG9ubHk8L2Rpdj4iLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQogICAgICAgIGVsc2U6CiAgICAgICAgICAgIHVzZXJzID0gbG9hZF91c2VycygpCiAgICAgICAgICAgIHVuYW1lID0gcmVnX3VzZXJuYW1lLmxvd2VyKCkuc3RyaXAoKQogICAgICAgICAgICBpZiB1bmFtZSBpbiB1c2VyczoKICAgICAgICAgICAgICAgIHN0Lm1hcmtkb3duKCI8ZGl2IGNsYXNzPSdlcnJvci1ib3gnPlVzZXJuYW1lIGFscmVhZHkgdGFrZW48L2Rpdj4iLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQogICAgICAgICAgICBlbHNlOgogICAgICAgICAgICAgICAgdXNlcnNbdW5hbWVdID0gewogICAgICAgICAgICAgICAgICAgICJ1c2VybmFtZSI6IHVuYW1lLAogICAgICAgICAgICAgICAgICAgICJmdWxsX25hbWUiOiBmdWxsX25hbWUuc3RyaXAoKSwKICAgICAgICAgICAgICAgICAgICAiZW1haWwiOiBlbWFpbC5zdHJpcCgpLmxvd2VyKCksCiAgICAgICAgICAgICAgICAgICAgInBhc3N3b3JkX2hhc2giOiBoYXNoX3Bhc3N3b3JkKHJlZ19wYXNzd29yZCksCiAgICAgICAgICAgICAgICAgICAgImNyZWF0ZWQiOiBkYXRldGltZS5ub3coKS5zdHJmdGltZSgiJWQgJWIgJVkiKSwKICAgICAgICAgICAgICAgICAgICAibGFzdF9sb2dpbiI6IE5vbmUsCiAgICAgICAgICAgICAgICAgICAgImxvZ2luX2NvdW50IjogMCwKICAgICAgICAgICAgICAgICAgICAic3RhdHVzIjogImFjdGl2ZSIsCiAgICAgICAgICAgICAgICAgICAgInJvbGUiOiAiYWRtaW4iIGlmIHVuYW1lID09IEFETUlOX1VTRVJOQU1FIGVsc2UgInVzZXIiCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICBzYXZlX3VzZXJzKHVzZXJzKQogICAgICAgICAgICAgICAgc3QubWFya2Rvd24oIjxkaXYgY2xhc3M9J3N1Y2Nlc3MtYm94Jz5BY2NvdW50IGNyZWF0ZWQhIFBsZWFzZSBzaWduIGluIGFib3ZlLjwvZGl2PiIsIHVuc2FmZV9hbGxvd19odG1sPVRydWUpCgogICAgc3QubWFya2Rvd24oIjwvZGl2PiIsIHVuc2FmZV9hbGxvd19odG1sPVRydWUpCgojIOKUgOKUgCBBRE1JTiBQQUdFIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgApkZWYgcmVuZGVyX2FkbWluX3VzZXJzKCk6CiAgICAiIiJBZG1pbiB1c2VyIG1hbmFnZW1lbnQgcGFuZWwiIiIKICAgIHN0Lm1hcmtkb3duKCI8ZGl2IHN0eWxlPSdmb250LXNpemU6MS40cmVtO2ZvbnQtd2VpZ2h0OjgwMDtjb2xvcjojZjFmNWY5O21hcmdpbi1ib3R0b206MjBweCc+8J+RpCBVU0VSIE1BTkFHRU1FTlQ8L2Rpdj4iLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQoKICAgIHVzZXJzID0gbG9hZF91c2VycygpCiAgICBpZiBub3QgdXNlcnM6CiAgICAgICAgc3QuaW5mbygiTm8gdXNlcnMgcmVnaXN0ZXJlZCB5ZXQuIikKICAgICAgICByZXR1cm4KCiAgICAjIFN1bW1hcnkKICAgIHRvdGFsID0gbGVuKHVzZXJzKQogICAgYWN0aXZlID0gc3VtKDEgZm9yIHUgaW4gdXNlcnMudmFsdWVzKCkgaWYgdS5nZXQoInN0YXR1cyIpPT0iYWN0aXZlIikKICAgIHRvZGF5ID0gZGF0ZXRpbWUubm93KCkuc3RyZnRpbWUoIiVkICViICVZIikKICAgIGxvZ2dlZF90b2RheSA9IHN1bSgxIGZvciB1IGluIHVzZXJzLnZhbHVlcygpIGlmIHUuZ2V0KCJsYXN0X2xvZ2luIiwiIikuc3RhcnRzd2l0aCh0b2RheSkpCgogICAgYzEsYzIsYzMgPSBzdC5jb2x1bW5zKDMpCiAgICB3aXRoIGMxOiBzdC5tZXRyaWMoIlRvdGFsIFVzZXJzIiwgdG90YWwpCiAgICB3aXRoIGMyOiBzdC5tZXRyaWMoIkFjdGl2ZSIsIGFjdGl2ZSkKICAgIHdpdGggYzM6IHN0Lm1ldHJpYygiTG9nZ2VkIEluIFRvZGF5IiwgbG9nZ2VkX3RvZGF5KQoKICAgIHN0Lm1hcmtkb3duKCItLS0iKQoKICAgICMgVXNlciB0YWJsZQogICAgZm9yIHVuYW1lLCB1c2VyIGluIHVzZXJzLml0ZW1zKCk6CiAgICAgICAgaWYgdW5hbWUgPT0gQURNSU5fVVNFUk5BTUU6IGNvbnRpbnVlCiAgICAgICAgc3RhdHVzID0gdXNlci5nZXQoInN0YXR1cyIsImFjdGl2ZSIpCiAgICAgICAgc2MgPSAiIzAwZmY4OCIgaWYgc3RhdHVzPT0iYWN0aXZlIiBlbHNlICIjZmY0NDQ0IgogICAgICAgIGggPSBmIjxkaXYgc3R5bGU9J2JhY2tncm91bmQ6IzFlMjkzYjtib3JkZXI6MXB4IHNvbGlkICMzMzQxNTU7Ym9yZGVyLWxlZnQ6M3B4IHNvbGlkIHtzY307Ym9yZGVyLXJhZGl1czoxMHB4O3BhZGRpbmc6MTJweCAxNnB4O21hcmdpbi1ib3R0b206OHB4Jz4iCiAgICAgICAgaCArPSBmIjxkaXYgc3R5bGU9J2Rpc3BsYXk6ZmxleDtqdXN0aWZ5LWNvbnRlbnQ6c3BhY2UtYmV0d2VlbjthbGlnbi1pdGVtczpjZW50ZXInPiIKICAgICAgICBoICs9IGYiPGRpdj48ZGl2IHN0eWxlPSdjb2xvcjojZjFmNWY5O2ZvbnQtd2VpZ2h0OjcwMCc+QHt1bmFtZX0g4oCUIHt1c2VyLmdldCgnZnVsbF9uYW1lJywnJyl9PC9kaXY+IgogICAgICAgIGggKz0gZiI8ZGl2IHN0eWxlPSdjb2xvcjojOTRhM2I4O2ZvbnQtc2l6ZTowLjc4cmVtJz57dXNlci5nZXQoJ2VtYWlsJywnJyl9IHwgSm9pbmVkOiB7dXNlci5nZXQoJ2NyZWF0ZWQnLCcnKX0gfCBMb2dpbnM6IHt1c2VyLmdldCgnbG9naW5fY291bnQnLDApfTwvZGl2PiIKICAgICAgICBoICs9IGYiPGRpdiBzdHlsZT0nY29sb3I6Izk0YTNiODtmb250LXNpemU6MC43OHJlbSc+TGFzdCBzZWVuOiB7dXNlci5nZXQoJ2xhc3RfbG9naW4nLCdOZXZlcicpfTwvZGl2PjwvZGl2PiIKICAgICAgICBoICs9IGYiPGRpdiBzdHlsZT0nY29sb3I6e3NjfTtmb250LXdlaWdodDo4MDA7Zm9udC1zaXplOjAuODVyZW0nPntzdGF0dXMudXBwZXIoKX08L2Rpdj48L2Rpdj48L2Rpdj4iCiAgICAgICAgc3QubWFya2Rvd24oaCwgdW5zYWZlX2FsbG93X2h0bWw9VHJ1ZSkKCiAgICAgICAgY29sMSwgY29sMiA9IHN0LmNvbHVtbnMoWzEsMV0pCiAgICAgICAgd2l0aCBjb2wxOgogICAgICAgICAgICBpZiBzdGF0dXMgPT0gImFjdGl2ZSI6CiAgICAgICAgICAgICAgICBpZiBzdC5idXR0b24oZiLwn5qrIFJldm9rZSBBY2Nlc3MiLCBrZXk9ZiJyZXZva2Vfe3VuYW1lfSIpOgogICAgICAgICAgICAgICAgICAgIHVzZXJzW3VuYW1lXVsic3RhdHVzIl0gPSAiaW5hY3RpdmUiCiAgICAgICAgICAgICAgICAgICAgc2F2ZV91c2Vycyh1c2VycykKICAgICAgICAgICAgICAgICAgICBzdC5yZXJ1bigpCiAgICAgICAgICAgIGVsc2U6CiAgICAgICAgICAgICAgICBpZiBzdC5idXR0b24oZiLinIUgUmVzdG9yZSBBY2Nlc3MiLCBrZXk9ZiJyZXN0b3JlX3t1bmFtZX0iKToKICAgICAgICAgICAgICAgICAgICB1c2Vyc1t1bmFtZV1bInN0YXR1cyJdID0gImFjdGl2ZSIKICAgICAgICAgICAgICAgICAgICBzYXZlX3VzZXJzKHVzZXJzKQogICAgICAgICAgICAgICAgICAgIHN0LnJlcnVuKCkKICAgICAgICB3aXRoIGNvbDI6CiAgICAgICAgICAgIGlmIHN0LmJ1dHRvbihmIvCfl5HvuI8gRGVsZXRlIFVzZXIiLCBrZXk9ZiJkZWxldGVfe3VuYW1lfSIpOgogICAgICAgICAgICAgICAgZGVsIHVzZXJzW3VuYW1lXQogICAgICAgICAgICAgICAgc2F2ZV91c2Vycyh1c2VycykKICAgICAgICAgICAgICAgIHN0LnJlcnVuKCkKCiAgICBzdC5tYXJrZG93bigiLS0tIikKICAgIHN0Lm1hcmtkb3duKGYiPGRpdiBzdHlsZT0nY29sb3I6Izk0YTNiODtmb250LXNpemU6MC43OHJlbSc+SW52aXRlIENvZGU6IDxzcGFuIHN0eWxlPSdjb2xvcjojZmZkZDAwO2ZvbnQtd2VpZ2h0OjcwMCc+e0lOVklURV9DT0RFfTwvc3Bhbj4g4oCUIFNoYXJlIHdpdGggbmV3IHVzZXJzPC9kaXY+IiwgdW5zYWZlX2FsbG93X2h0bWw9VHJ1ZSkKCiMg4pSA4pSAIE5BVkJBUiDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKZGVmIHJlbmRlcl9uYXZiYXIoKToKICAgICIiIlRvcCBuYXZpZ2F0aW9uIGJhciB3aXRoIHVzZXIgaW5mbyBhbmQgbG9nb3V0IiIiCiAgICB1c2VyID0gZ2V0X2N1cnJlbnRfdXNlcigpCiAgICB1c2VycyA9IGxvYWRfdXNlcnMoKQogICAgdXNlcl9kYXRhID0gdXNlcnMuZ2V0KHVzZXIsIHt9KQogICAgbmFtZSA9IHVzZXJfZGF0YS5nZXQoImZ1bGxfbmFtZSIsIHVzZXIpCgogICAgc3QubWFya2Rvd24oZiIiIgogICAgPGRpdiBzdHlsZT0nYmFja2dyb3VuZDojMGMxMzIyO2JvcmRlci1ib3R0b206MXB4IHNvbGlkICMzMzQxNTU7CiAgICAgICAgICAgICAgICBwYWRkaW5nOjEwcHggMjBweDtkaXNwbGF5OmZsZXg7anVzdGlmeS1jb250ZW50OnNwYWNlLWJldHdlZW47CiAgICAgICAgICAgICAgICBhbGlnbi1pdGVtczpjZW50ZXI7bWFyZ2luLWJvdHRvbToyMHB4O2JvcmRlci1yYWRpdXM6MCAwIDEycHggMTJweCc+CiAgICAgICAgPGRpdiBzdHlsZT0nZGlzcGxheTpmbGV4O2FsaWduLWl0ZW1zOmNlbnRlcjtnYXA6MTJweCc+CiAgICAgICAgICAgIDxzcGFuIHN0eWxlPSdmb250LXNpemU6MS40cmVtO2ZvbnQtd2VpZ2h0OjkwMDtjb2xvcjojZmY0NDQ0O2xldHRlci1zcGFjaW5nOjNweCc+QmVhcklRPC9zcGFuPgogICAgICAgICAgICA8c3BhbiBzdHlsZT0nY29sb3I6IzY0NzQ4Yjtmb250LXNpemU6MC43NXJlbTtsZXR0ZXItc3BhY2luZzoycHgnPk1BUktFVCBXRUFUSEVSIElOVEVMTElHRU5DRTwvc3Bhbj4KICAgICAgICA8L2Rpdj4KICAgICAgICA8ZGl2IHN0eWxlPSdkaXNwbGF5OmZsZXg7YWxpZ24taXRlbXM6Y2VudGVyO2dhcDoxNnB4Jz4KICAgICAgICAgICAgPHNwYW4gc3R5bGU9J2NvbG9yOiM5NGEzYjg7Zm9udC1zaXplOjAuODJyZW0nPvCfkaQge25hbWV9PC9zcGFuPgogICAgICAgICAgICB7JzxzcGFuIHN0eWxlPSJiYWNrZ3JvdW5kOiNmZjQ0NDQyMjtjb2xvcjojZmY0NDQ0O3BhZGRpbmc6MnB4IDEwcHg7Ym9yZGVyLXJhZGl1czoyMHB4O2ZvbnQtc2l6ZTowLjdyZW07Zm9udC13ZWlnaHQ6ODAwIj5BRE1JTjwvc3Bhbj4nIGlmIGlzX2FkbWluKCkgZWxzZSAnJ30KICAgICAgICA8L2Rpdj4KICAgIDwvZGl2PgogICAgIiIiLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQoKICAgICMgTG9nb3V0IGJ1dHRvbiBpbiBzaWRlYmFyCiAgICB3aXRoIHN0LnNpZGViYXI6CiAgICAgICAgc3QubWFya2Rvd24oZiI8ZGl2IHN0eWxlPSdwYWRkaW5nOjEwcHggMDtib3JkZXItYm90dG9tOjFweCBzb2xpZCAjMzM0MTU1O21hcmdpbi1ib3R0b206MTJweCc+IgogICAgICAgICAgICAgICAgICAgZiI8ZGl2IHN0eWxlPSdjb2xvcjojZjFmNWY5O2ZvbnQtd2VpZ2h0OjcwMCc+8J+RpCB7bmFtZX08L2Rpdj4iCiAgICAgICAgICAgICAgICAgICBmIjxkaXYgc3R5bGU9J2NvbG9yOiM5NGEzYjg7Zm9udC1zaXplOjAuNzVyZW0nPkB7dXNlcn08L2Rpdj48L2Rpdj4iLCB1bnNhZmVfYWxsb3dfaHRtbD1UcnVlKQogICAgICAgIGlmIHN0LmJ1dHRvbigi8J+aqiBTaWduIE91dCIsIGtleT0ibG9nb3V0X2J0biIpOgogICAgICAgICAgICBsb2dvdXQoKQogICAgICAgICAgICBzdC5yZXJ1bigpCg=="
-with open("beariq_auth.py","wb") as f: f.write(base64.b64decode(code))
-print("Persistent login fixed! No more logout on refresh!")
+"""
+BearIQ Authentication Module
+Handles: Login, Register, Session, Admin, Auto-login
+"""
+import streamlit as st
+import hashlib, json, os
+from datetime import datetime, timedelta
+
+# ── PATHS ──────────────────────────────────────────────────────
+BASE = os.path.dirname(os.path.abspath(__file__))
+USERS_FILE = os.path.join(BASE, "data", "users.json")
+INVITE_CODE = "BEARIQ2026"
+ADMIN_USERNAME = "ishan_admin"
+SESSION_DAYS = 30
+
+# ── STORAGE ────────────────────────────────────────────────────
+def ensure_data_dir():
+    os.makedirs(os.path.join(BASE, "data"), exist_ok=True)
+
+def load_users():
+    ensure_data_dir()
+    if os.path.exists(USERS_FILE):
+        try:
+            with open(USERS_FILE, "r") as f:
+                return json.load(f)
+        except: return {}
+    return {}
+
+def save_users(users):
+    ensure_data_dir()
+    with open(USERS_FILE, "w") as f:
+        json.dump(users, f, indent=2)
+
+# ── SECURITY ────────────────────────────────────────────────────
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def verify_password(password, hashed):
+    return hash_password(password) == hashed
+
+# ── SESSION MANAGEMENT ──────────────────────────────────────────
+def get_session_key(username):
+    """Generate unique session key"""
+    seed = username + "beariq_secret_2026"
+    return hashlib.sha256(seed.encode()).hexdigest()[:32]
+
+def save_session(username):
+    """Save session — both state + persistent token via URL"""
+    st.session_state["beariq_user"] = username
+    st.session_state["beariq_session_key"] = get_session_key(username)
+    st.session_state["beariq_login_time"] = datetime.now().isoformat()
+    # Save token to users file so we can restore on refresh
+    users = load_users()
+    if username in users:
+        users[username]["last_login"] = datetime.now().strftime("%d %b %Y %I:%M %p")
+        users[username]["login_count"] = users[username].get("login_count", 0) + 1
+        users[username]["session_token"] = get_session_key(username)
+        users[username]["session_date"] = datetime.now().isoformat()
+        save_users(users)
+    # Inject JS to save login in localStorage
+    _token = get_session_key(username)
+    st.markdown(f"""<script>
+    try {{
+        localStorage.setItem('beariq_user', '{username}');
+        localStorage.setItem('beariq_token', '{_token}');
+        localStorage.setItem('beariq_time', new Date().toISOString());
+    }} catch(e) {{}}
+    </script>""", unsafe_allow_html=True)
+
+def restore_session_from_storage():
+    """Try to restore session from localStorage on page load"""
+    if "beariq_user" in st.session_state:
+        return True
+    # Inject JS to read localStorage and set URL param
+    st.markdown("""<script>
+    try {
+        var user = localStorage.getItem('beariq_user');
+        var token = localStorage.getItem('beariq_token');
+        var time = localStorage.getItem('beariq_time');
+        if (user && token && time) {
+            var stored = new Date(time);
+            var now = new Date();
+            var days = (now - stored) / (1000 * 60 * 60 * 24);
+            if (days < 30) {
+                var url = new URL(window.location.href);
+                if (!url.searchParams.get('_auth_user')) {
+                    url.searchParams.set('_auth_user', user);
+                    url.searchParams.set('_auth_token', token);
+                    window.location.href = url.toString();
+                }
+            } else {
+                localStorage.removeItem('beariq_user');
+                localStorage.removeItem('beariq_token');
+                localStorage.removeItem('beariq_time');
+            }
+        }
+    } catch(e) {}
+    </script>""", unsafe_allow_html=True)
+    return False
+
+def is_logged_in():
+    """Check if user has valid session — restore from localStorage if needed"""
+    # Try URL params first (set by localStorage JS)
+    try:
+        params = st.query_params
+        auth_user = params.get("_auth_user", "")
+        auth_token = params.get("_auth_token", "")
+        if auth_user and auth_token:
+            expected = get_session_key(auth_user)
+            if auth_token == expected:
+                users = load_users()
+                user = users.get(auth_user, {})
+                if user.get("status") == "active":
+                    # Restore session state
+                    st.session_state["beariq_user"] = auth_user
+                    st.session_state["beariq_session_key"] = auth_token
+                    st.session_state["beariq_login_time"] = datetime.now().isoformat()
+                    # Clear params from URL (clean URL)
+                    st.query_params.clear()
+                    return True
+    except: pass
+
+    # Check session state
+    if "beariq_user" not in st.session_state:
+        return False
+    if "beariq_session_key" not in st.session_state:
+        return False
+    username = st.session_state["beariq_user"]
+    expected_key = get_session_key(username)
+    if st.session_state["beariq_session_key"] != expected_key:
+        return False
+    login_time = st.session_state.get("beariq_login_time")
+    if login_time:
+        try:
+            lt = datetime.fromisoformat(login_time)
+            if (datetime.now() - lt).days >= SESSION_DAYS:
+                logout()
+                return False
+        except: pass
+    users = load_users()
+    user = users.get(username, {})
+    if user.get("status") != "active":
+        logout()
+        return False
+    return True
+
+def get_current_user():
+    return st.session_state.get("beariq_user", None)
+
+def is_admin():
+    return get_current_user() == ADMIN_USERNAME
+
+def logout():
+    for key in ["beariq_user","beariq_session_key","beariq_login_time"]:
+        if key in st.session_state:
+            del st.session_state[key]
+    # Clear localStorage too
+    st.markdown("""<script>
+    try {
+        localStorage.removeItem('beariq_user');
+        localStorage.removeItem('beariq_token');
+        localStorage.removeItem('beariq_time');
+    } catch(e) {}
+    </script>""", unsafe_allow_html=True)
+
+# ── UI STYLES ────────────────────────────────────────────────────
+AUTH_CSS = """
+<style>
+.stApp{background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);color:#e2e8f0}
+[data-testid="stSidebar"]{display:none}
+.auth-container{
+    max-width:420px;margin:0 auto;padding:40px 20px;
+}
+.auth-logo{
+    text-align:center;margin-bottom:32px;
+}
+.auth-logo-text{
+    font-size:3rem;font-weight:900;color:#ff4444;
+    letter-spacing:6px;display:block;
+}
+.auth-tagline{
+    font-size:0.8rem;color:#94a3b8;letter-spacing:2px;
+    display:block;margin-top:4px;
+}
+.auth-card{
+    background:#1e293b;border:1px solid #334155;
+    border-radius:16px;padding:32px;
+}
+.auth-title{
+    font-size:1.2rem;font-weight:800;color:#f1f5f9;
+    margin-bottom:24px;text-align:center;
+}
+.auth-divider{
+    border:none;border-top:1px solid #334155;
+    margin:20px 0;
+}
+.stTextInput>div>div>input{
+    background:#0f172a!important;
+    border:1px solid #334155!important;
+    color:#f1f5f9!important;
+    border-radius:8px!important;
+}
+.stTextInput>div>div>input:focus{
+    border:1px solid #60a5fa!important;
+    box-shadow:none!important;
+}
+.stButton>button{
+    background:#dc2626!important;color:#fff!important;
+    border:none!important;border-radius:8px!important;
+    font-weight:700!important;width:100%!important;
+    padding:12px!important;font-size:0.95rem!important;
+}
+.stButton>button:hover{background:#b91c1c!important;}
+.auth-footer{
+    text-align:center;color:#64748b;
+    font-size:0.75rem;margin-top:24px;
+}
+.error-box{
+    background:#2d1515;border:1px solid #f8717155;
+    border-left:3px solid #f87171;border-radius:8px;
+    padding:10px 14px;color:#fca5a5;font-size:0.85rem;
+    margin:10px 0;
+}
+.success-box{
+    background:#0f2922;border:1px solid #34d39955;
+    border-left:3px solid #34d399;border-radius:8px;
+    padding:10px 14px;color:#00ff88;font-size:0.85rem;
+    margin:10px 0;
+}
+#MainMenu{visibility:hidden!important}
+footer{display:none!important;visibility:hidden!important;height:0!important;overflow:hidden!important}
+.stDeployButton{display:none!important}
+[data-testid="stDecoration"]{display:none!important}
+[data-testid="stFooter"]{display:none!important}
+[class*="viewerBadge"]{display:none!important;visibility:hidden!important}
+[class*="StatusWidget"]{display:none!important}
+[class*="createdBy"]{display:none!important}
+iframe[title*="streamlit"]{display:none!important}
+div[class*="badge"]{display:none!important}
+.streamlit-footer{display:none!important}
+div:has(> a[href*="streamlit.io"]){display:none!important;height:0!important}
+div:has(> [class*="viewerBadge"]){display:none!important;height:0!important}
+</style>
+"""
+
+def render_logo():
+    st.markdown("""
+    <div class="auth-logo">
+        <span class="auth-logo-text">BearIQ</span>
+        <span class="auth-tagline">MARKET WEATHER INTELLIGENCE</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ── LOGIN PAGE ────────────────────────────────────────────────────
+def render_login():
+    st.markdown(AUTH_CSS, unsafe_allow_html=True)
+    st.markdown("<div class='auth-container'>", unsafe_allow_html=True)
+    render_logo()
+    st.markdown("<div class='auth-card'>", unsafe_allow_html=True)
+    st.markdown("<div class='auth-title'>Welcome Back</div>", unsafe_allow_html=True)
+
+    username = st.text_input("Username", placeholder="Enter your username", key="login_user")
+    password = st.text_input("Password", type="password", placeholder="Enter your password", key="login_pass")
+
+    if st.button("Sign In →", key="login_btn"):
+        if not username or not password:
+            st.markdown("<div class='error-box'>Please enter username and password</div>", unsafe_allow_html=True)
+        else:
+            users = load_users()
+            user = users.get(username.lower().strip())
+            if not user:
+                st.markdown("<div class='error-box'>Username not found</div>", unsafe_allow_html=True)
+            elif user.get("status") != "active":
+                st.markdown("<div class='error-box'>Account inactive. Contact BearIQ support.</div>", unsafe_allow_html=True)
+            elif not verify_password(password, user["password_hash"]):
+                st.markdown("<div class='error-box'>Incorrect password</div>", unsafe_allow_html=True)
+            else:
+                save_session(username.lower().strip())
+                st.rerun()
+
+    st.markdown("<hr class='auth-divider'>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align:center;color:#94a3b8;font-size:0.82rem'>New user? <span style='color:#4488ff'>Register below</span></div>", unsafe_allow_html=True)
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # Register section
+    with st.expander("Create New Account"):
+        render_register()
+
+    st.markdown("<div class='auth-footer'>BearIQ Market Weather Intelligence<br>For educational purposes only</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+# ── REGISTER PAGE ─────────────────────────────────────────────────
+def render_register():
+    st.markdown("<div style='padding:10px 0'>", unsafe_allow_html=True)
+
+    full_name = st.text_input("Full Name", placeholder="Your full name", key="reg_name")
+    reg_username = st.text_input("Choose Username", placeholder="e.g. rajesh_trader", key="reg_user")
+    email = st.text_input("Email Address", placeholder="your@email.com", key="reg_email")
+    reg_password = st.text_input("Create Password", type="password", placeholder="Minimum 6 characters", key="reg_pass")
+    invite = st.text_input("Invite Code", placeholder="Enter invite code", key="reg_invite")
+
+    if st.button("Create Account", key="reg_btn"):
+        # Validations
+        if not all([full_name, reg_username, email, reg_password, invite]):
+            st.markdown("<div class='error-box'>All fields are required</div>", unsafe_allow_html=True)
+        elif invite.upper().strip() != INVITE_CODE:
+            st.markdown("<div class='error-box'>Invalid invite code</div>", unsafe_allow_html=True)
+        elif len(reg_password) < 6:
+            st.markdown("<div class='error-box'>Password must be at least 6 characters</div>", unsafe_allow_html=True)
+        elif " " in reg_username or not reg_username.replace("_","").isalnum():
+            st.markdown("<div class='error-box'>Username: letters, numbers and underscore only</div>", unsafe_allow_html=True)
+        else:
+            users = load_users()
+            uname = reg_username.lower().strip()
+            if uname in users:
+                st.markdown("<div class='error-box'>Username already taken</div>", unsafe_allow_html=True)
+            else:
+                users[uname] = {
+                    "username": uname,
+                    "full_name": full_name.strip(),
+                    "email": email.strip().lower(),
+                    "password_hash": hash_password(reg_password),
+                    "created": datetime.now().strftime("%d %b %Y"),
+                    "last_login": None,
+                    "login_count": 0,
+                    "status": "active",
+                    "role": "admin" if uname == ADMIN_USERNAME else "user"
+                }
+                save_users(users)
+                st.markdown("<div class='success-box'>Account created! Please sign in above.</div>", unsafe_allow_html=True)
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+# ── ADMIN PAGE ────────────────────────────────────────────────────
+def render_admin_users():
+    """Admin user management panel"""
+    st.markdown("<div style='font-size:1.4rem;font-weight:800;color:#f1f5f9;margin-bottom:20px'>👤 USER MANAGEMENT</div>", unsafe_allow_html=True)
+
+    users = load_users()
+    if not users:
+        st.info("No users registered yet.")
+        return
+
+    # Summary
+    total = len(users)
+    active = sum(1 for u in users.values() if u.get("status")=="active")
+    today = datetime.now().strftime("%d %b %Y")
+    logged_today = sum(1 for u in users.values() if u.get("last_login","").startswith(today))
+
+    c1,c2,c3 = st.columns(3)
+    with c1: st.metric("Total Users", total)
+    with c2: st.metric("Active", active)
+    with c3: st.metric("Logged In Today", logged_today)
+
+    st.markdown("---")
+
+    # User table
+    for uname, user in users.items():
+        if uname == ADMIN_USERNAME: continue
+        status = user.get("status","active")
+        sc = "#00ff88" if status=="active" else "#ff4444"
+        h = f"<div style='background:#1e293b;border:1px solid #334155;border-left:3px solid {sc};border-radius:10px;padding:12px 16px;margin-bottom:8px'>"
+        h += f"<div style='display:flex;justify-content:space-between;align-items:center'>"
+        h += f"<div><div style='color:#f1f5f9;font-weight:700'>@{uname} — {user.get('full_name','')}</div>"
+        h += f"<div style='color:#94a3b8;font-size:0.78rem'>{user.get('email','')} | Joined: {user.get('created','')} | Logins: {user.get('login_count',0)}</div>"
+        h += f"<div style='color:#94a3b8;font-size:0.78rem'>Last seen: {user.get('last_login','Never')}</div></div>"
+        h += f"<div style='color:{sc};font-weight:800;font-size:0.85rem'>{status.upper()}</div></div></div>"
+        st.markdown(h, unsafe_allow_html=True)
+
+        col1, col2 = st.columns([1,1])
+        with col1:
+            if status == "active":
+                if st.button(f"🚫 Revoke Access", key=f"revoke_{uname}"):
+                    users[uname]["status"] = "inactive"
+                    save_users(users)
+                    st.rerun()
+            else:
+                if st.button(f"✅ Restore Access", key=f"restore_{uname}"):
+                    users[uname]["status"] = "active"
+                    save_users(users)
+                    st.rerun()
+        with col2:
+            if st.button(f"🗑️ Delete User", key=f"delete_{uname}"):
+                del users[uname]
+                save_users(users)
+                st.rerun()
+
+    st.markdown("---")
+    st.markdown(f"<div style='color:#94a3b8;font-size:0.78rem'>Invite Code: <span style='color:#ffdd00;font-weight:700'>{INVITE_CODE}</span> — Share with new users</div>", unsafe_allow_html=True)
+
+# ── NAVBAR ────────────────────────────────────────────────────────
+def render_navbar():
+    """Top navigation bar with user info and logout"""
+    user = get_current_user()
+    users = load_users()
+    user_data = users.get(user, {})
+    name = user_data.get("full_name", user)
+
+    st.markdown(f"""
+    <div style='background:#0c1322;border-bottom:1px solid #334155;
+                padding:10px 20px;display:flex;justify-content:space-between;
+                align-items:center;margin-bottom:20px;border-radius:0 0 12px 12px'>
+        <div style='display:flex;align-items:center;gap:12px'>
+            <span style='font-size:1.4rem;font-weight:900;color:#ff4444;letter-spacing:3px'>BearIQ</span>
+            <span style='color:#64748b;font-size:0.75rem;letter-spacing:2px'>MARKET WEATHER INTELLIGENCE</span>
+        </div>
+        <div style='display:flex;align-items:center;gap:16px'>
+            <span style='color:#94a3b8;font-size:0.82rem'>👤 {name}</span>
+            {'<span style="background:#ff444422;color:#ff4444;padding:2px 10px;border-radius:20px;font-size:0.7rem;font-weight:800">ADMIN</span>' if is_admin() else ''}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Logout button in sidebar
+    with st.sidebar:
+        st.markdown(f"<div style='padding:10px 0;border-bottom:1px solid #334155;margin-bottom:12px'>"
+                   f"<div style='color:#f1f5f9;font-weight:700'>👤 {name}</div>"
+                   f"<div style='color:#94a3b8;font-size:0.75rem'>@{user}</div></div>", unsafe_allow_html=True)
+        if st.button("🚪 Sign Out", key="logout_btn"):
+            logout()
+            st.rerun()
