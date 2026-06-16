@@ -169,7 +169,7 @@ if "Home" in page:
     st.markdown(f"""
     <div style='background:{grad};border:1px solid {accent}22;border-radius:28px;
                 padding:36px 32px 30px;margin-bottom:14px;position:relative;overflow:hidden'>
-        <div style='color:#5b6478;font-size:0.72rem;margin-bottom:24px'>{now.strftime('%A, %d %B %Y')} · India Markets</div>
+        <div style='color:#5b6478;font-size:0.72rem;margin-bottom:24px'>India Markets</div>
         <div style='display:flex;align-items:center;justify-content:space-between'>
             <div>
                 <div style='font-size:4.6rem;font-weight:800;color:#f5f7fb;line-height:1;letter-spacing:-3px'>{fg}<span style='font-size:1.6rem;font-weight:600;color:#5b6478'>/100</span></div>
